@@ -1,0 +1,11 @@
+<h2>Enrollment</h2>
+
+<div>
+  @if (courseId) {
+    <p>You are about to enroll in course with ID: {{ courseId }}.</p>
+    <button (click)="onEnroll()">Confirm Enrollment</button>
+    <a [routerLink]="['/courses', courseId]">Cancel</a>
+  } @else {
+    <p>Could not determine the course to enroll in.</p>
+  }
+</div>

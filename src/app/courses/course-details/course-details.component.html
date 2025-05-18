@@ -1,0 +1,11 @@
+<h2>Course Details</h2>
+
+<div *ngIf="course">
+  <h3>{{ course.title}}</h3>
+  <p>Description: {{ course.description }}</p>
+  <p>TeacherId: {{ course.teacherId }}</p>
+  <button  [routerLink]="['/courses']">Back to courses</button>
+</div>
+<div *ngIf="!course">
+  <p>Course not found.</p>
+</div>

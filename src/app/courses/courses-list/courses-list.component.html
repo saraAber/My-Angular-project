@@ -1,0 +1,44 @@
+// courses-list.component.html
+<div class="courses-list-container">
+  <h2>Available Courses</h2>
+
+  <div *ngIf="isLoading" class="loading-spinner">Loading courses...</div>
+
+  <ul *ngIf="!isLoading">
+    @if (hasCourses) {
+      @for (course of courses; track course.id) {
+        <li>
+          <h3  [routerLink]="['/courses', course.id]">{{ course.title }}</h3>
+          <p>{{ course.description }}</p>
+          <p>Instructor: {{ course.teacherId }}</p>
+           <div class="button-container">
+            <button (click)="enroll(course.id)">Enroll</button>
+            <button (click)="unenroll(course.id)">Unenroll</button>
+           </div>
+        </li>
+      }
+    } @else {
+      <li class="no-courses">No courses available.</li>
+    }
+  </ul>
+</div>
+<!-- <div class="courses-list-container">
+  <h2>Available Courses</h2>
+
+  <div *ngIf="isLoading" class="loading-spinner"></div>
+
+  <ul *ngIf="!isLoading">
+    @if (hasCourses) {
+      @for (course of courses; track course.id) {
+        <li>
+          <h3 style="cursor: pointer;" [routerLink]="['/courses', course.id]">{{ course.title }}</h3>
+          <p>{{ course.description }}</p>
+          <p>Instructor: {{ course.teacherId }}</p>
+          <button>Join Course</button>
+        </li>
+      }
+    } @else {
+      <li class="no-courses">No courses available.</li>
+    }
+  </ul>
+</div> -->

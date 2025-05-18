@@ -1,0 +1,70 @@
+.courses-list-container {
+    padding: 20px;
+  }
+  
+  h2 {
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  li {
+    border: 1px solid #ddd;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  h3 {
+    color: #007bff;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  h3:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  p {
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+  
+  button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  button:hover {
+    background-color: #218838;
+  }
+  
+  .no-courses {
+    color: #dc3545;
+    font-style: italic;
+  }
+  .loading-spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto; /* מרכוז הספינר */
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }

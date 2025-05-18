@@ -1,29 +1,51 @@
 <h2>Register</h2>
+@if(errorMessage ){
+    <div class="error-message">{{ errorMessage }}</div>
+}
+@if(successMessage){
+    <div class="success-message">{{ successMessage }}</div>
+}
 <form [formGroup]="registerForm" (ngSubmit)="register()">
-  <div>
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" formControlName="name" required>
-    <div *ngIf="registerForm.controls['name'].invalid && (registerForm.controls['name'].dirty || registerForm.controls['name'].touched)">
-      <small *ngIf="registerForm.controls['name'].errors?.['required']">Name is required</small>
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" formControlName="name" required>
+        @if(registerForm.controls['name'].invalid && (registerForm.controls['name'].dirty ||
+        registerForm.controls['name'].touched))
+        {@if(registerForm.controls['name'].errors?.['required'])
+        {<div>Name is required</div>}}
     </div>
-  </div>
-  <div>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" formControlName="email" required>
-    <div *ngIf="registerForm.controls['email'].invalid && (registerForm.controls['email'].dirty || registerForm.controls['email'].touched)">
-      <small *ngIf="registerForm.controls['email'].errors?.['required']">Email is required</small>
-      <small *ngIf="registerForm.controls['email'].errors?.['email']">Email must be valid</small>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" formControlName="email" required>
+        @if(registerForm.controls['email'].invalid && (registerForm.controls['email'].dirty ||
+        registerForm.controls['email'].touched))
+        {
+        @if(registerForm.controls['email'].errors?.['required'])
+        {
+        <div>Email is required</div>}
+        @else
+        {<div>Email must be valid</div>}
+        }
     </div>
-  </div>
-  <div>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" formControlName="password" required>
-    <div *ngIf="registerForm.controls['password'].invalid && (registerForm.controls['password'].dirty || registerForm.controls['password'].touched)">
-      <small *ngIf="registerForm.controls['password'].errors?.['required']">Password is required</small>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" formControlName="password" required>
+        @if(registerForm.controls['password'].invalid && (registerForm.controls['password'].dirty || registerForm.controls['password'].touched))
+        {@if (registerForm.controls['password'].errors?.['required']) {<div>Password is required</div>}}
     </div>
-  </div>
-  <button type="submit" [disabled]="!registerForm.valid">Register</button>
-  <p>
-    Already have an account? <a routerLink="/login">Login</a>
-  </p>
+    <div>
+        <label for="role">Role:</label>
+        <select id="role" name="role" formControlName="role" required>
+            <option value="student">Student</option>
+            <option value="teacher">Teacher</option>
+            <option value="admin">Admin</option>
+        </select>
+        @if(registerForm.controls['role'].invalid && (registerForm.controls['role'].dirty || registerForm.controls['role'].touched))
+        {@if(registerForm.controls['role'].errors?.['required'])
+        {<div>Role is required</div>}}
+    </div>
+    <button type="submit" [disabled]="!registerForm.valid">Register</button>
+    <p>
+        Already have an account? <a routerLink="/login">Login</a>
+    </p>
 </form>

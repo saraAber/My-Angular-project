@@ -1,0 +1,12 @@
+<h2>My Courses</h2>
+
+<ul>
+  @for (course of myCourses; track course.id) {
+    <li>
+      <h3>{{ course.name }}</h3>
+      <p>{{ course.description }}</p>
+    </li>
+  } @empty {
+    <li>You are not currently enrolled in any courses.</li>
+  }
+</ul>
