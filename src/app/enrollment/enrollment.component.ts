@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router,RouterModule } from '@angular/router';
-import { CourseService } from '../courses/course.service';
-import { AuthService } from '../auth/auth.service';
+import { CourseService } from '../services/course.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-enrollment',

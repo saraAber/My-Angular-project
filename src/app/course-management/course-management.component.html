@@ -1,0 +1,136 @@
+<div class="course-management-container">
+  <h2>ניהול קורסים</h2>
+
+  <div *ngIf="isLoading" class="loading-indicator">
+     <mat-spinner></mat-spinner>
+     <p>טוען קורסים לניהול...</p>
+  </div>
+
+  <mat-card *ngIf="!isLoading" class="course-form-card">
+    <mat-card-title>{{ isEditingCourse ? 'עריכת קורס' : 'הוספת קורס חדש' }}</mat-card-title>
+    <mat-card-content>
+      <form [formGroup]="courseForm" (ngSubmit)="isEditingCourse ? updateCourse() : addCourse()">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>כותרת קורס</mat-label>
+          <input matInput formControlName="title" required>
+          <mat-error *ngIf="courseForm.get('title')?.hasError('required') && courseForm.get('title')?.touched">
+            כותרת נדרשת.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>תיאור קורס</mat-label>
+          <textarea matInput formControlName="description" required rows="4"></textarea>
+           <mat-error *ngIf="courseForm.get('description')?.hasError('required') && courseForm.get('description')?.touched">
+            תיאור נדרש.
+          </mat-error>
+        </mat-form-field>
+
+        <div class="form-actions">
+           <button mat-raised-button color="primary" type="submit" [disabled]="courseForm.invalid || isSaving">
+            <span *ngIf="!isSaving">{{ isEditingCourse ? 'עדכן קורס' : 'הוסף קורס' }}</span>
+            <span *ngIf="isSaving">שומר...</span>
+          </button>
+          <button mat-button *ngIf="isEditingCourse" (click)="cancelEditCourse()" [disabled]="isSaving">
+            ביטול
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="!isLoading && courses.length > 0" class="courses-list-card">
+    <mat-card-title>הקורסים שלי</mat-card-title>
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item *ngFor="let course of courses">
+          <div class="course-item">
+            <div class="course-info">
+              <h3>{{ course.title }}</h3>
+              <p>{{ course.description }}</p>
+            </div>
+            <div class="course-actions">
+              <button mat-icon-button color="primary" (click)="selectCourseForEdit(course)" [disabled]="isSaving">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteCourse(course.id)" [disabled]="isSaving">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+
+           <mat-expansion-panel class="lessons-panel">
+               <mat-expansion-panel-header>
+                   <mat-panel-title>
+                       שיעורים בקורס
+                   </mat-panel-title>
+               </mat-expansion-panel-header>
+
+               <div class="lesson-form-section">
+                   <h4>{{ isEditingLesson ? 'עריכת שיעור' : 'הוספת שיעור חדש' }}</h4>
+                   <form [formGroup]="lessonForm" (ngSubmit)="isEditingLesson ? updateLesson() : addLesson(course.id)">
+                       <mat-form-field appearance="fill" class="full-width">
+                           <mat-label>כותרת שיעור</mat-label>
+                           <input matInput formControlName="title" required>
+                            <mat-error *ngIf="lessonForm.get('title')?.hasError('required') && lessonForm.get('title')?.touched">
+                                כותרת נדרשת.
+                            </mat-error>
+                       </mat-form-field>
+
+                       <mat-form-field appearance="fill" class="full-width">
+                           <mat-label>תוכן שיעור</mat-label>
+                           <textarea matInput formControlName="content" required rows="6"></textarea>
+                            <mat-error *ngIf="lessonForm.get('content')?.hasError('required') && lessonForm.get('content')?.touched">
+                                תוכן נדרש.
+                            </mat-error>
+                       </mat-form-field>
+
+                        <input type="hidden" formControlName="courseId">
+
+
+                       <div class="form-actions">
+                           <button mat-raised-button color="primary" type="submit" [disabled]="lessonForm.invalid || isSaving">
+                               <span *ngIf="!isSaving">{{ isEditingLesson ? 'עדכן שיעור' : 'הוסף שיעור' }}</span>
+                               <span *ngIf="isSaving">שומר...</span>
+                           </button>
+                           <button mat-button *ngIf="isEditingLesson" (click)="cancelEditLesson()" [disabled]="isSaving">
+                               ביטול
+                           </button>
+                       </div>
+                   </form>
+               </div>
+
+               <div class="lessons-list-section">
+                   <h4>שיעורים קיימים</h4>
+                   <mat-list *ngIf="getLessonsForCourse(course.id).length > 0">
+                       <mat-list-item *ngFor="let lesson of getLessonsForCourse(course.id)">
+                           <div class="lesson-item">
+                               <span>{{ lesson.title }}</span>
+                               <div class="lesson-actions">
+                                   <button mat-icon-button color="primary" (click)="selectLessonForEdit(lesson)" [disabled]="isSaving">
+                                       <mat-icon>edit</mat-icon>
+                                   </button>
+                                   <button mat-icon-button color="warn" (click)="deleteLesson(course.id, lesson.id)" [disabled]="isSaving">
+                                       <mat-icon>delete</mat-icon>
+                                   </button>
+                               </div>
+                           </div>
+                       </mat-list-item>
+                   </mat-list>
+                    <div *ngIf="getLessonsForCourse(course.id).length === 0">
+                        <p>אין שיעורים בקורס זה.</p>
+                    </div>
+               </div>
+
+           </mat-expansion-panel>
+
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+
+  <div *ngIf="!isLoading && courses.length === 0" class="no-courses-message">
+    אין קורסים לניהול כרגע.
+  </div>
+
+</div>

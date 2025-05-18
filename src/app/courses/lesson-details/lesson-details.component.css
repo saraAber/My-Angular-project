@@ -1,0 +1,32 @@
+.lesson-details-container {
+    padding: 20px;
+  }
+  
+  .loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px; /* Adjust as needed */
+  }
+  
+  .lesson-card {
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+  
+  .lesson-card mat-card-title {
+      margin-bottom: 15px;
+  }
+  
+  .lesson-card mat-card-content {
+      line-height: 1.6; /* Improve readability of content */
+  }
+  
+  .error-message {
+      text-align: center;
+      color: #f44336; /* Red color for errors */
+      margin-top: 20px;
+  }
+  

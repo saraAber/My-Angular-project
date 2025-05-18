@@ -5,8 +5,8 @@ import { AuthInterceptor } from './app/auth/interceptor';
 import { importProvidersFrom, Provider } from '@angular/core'; // <-- הוסף Provider
 import { RouterModule } from '@angular/router';
 import { routes } from './app/app.routes';
-import { AuthService } from './app/auth/auth.service';
-import { CourseService } from './app/courses/course.service';
+import { AuthService } from './app/services/auth.service';
+import { CourseService } from './app/services/course.service';
 
 const authInterceptorProvider: Provider = { // <-- הגדר ספק
   provide: HTTP_INTERCEPTORS,

@@ -1,0 +1,24 @@
+<div class="lesson-details-container">
+    <div *ngIf="isLoading" class="loading-indicator">
+       <mat-spinner></mat-spinner>
+       <p>טוען פרטי שיעור...</p>
+    </div>
+  
+    <mat-card *ngIf="!isLoading && lesson" class="lesson-card">
+      <mat-card-title>{{ lesson.title }}</mat-card-title>
+      <mat-card-content>
+        <p [innerHTML]="lesson.content"></p>
+      </mat-card-content>
+       <mat-card-actions align="end">
+          <button mat-button color="primary" (click)="goBackToCourse()">
+             <mat-icon>arrow_back</mat-icon> חזרה לקורס
+          </button>
+       </mat-card-actions>
+    </mat-card>
+  
+     <div *ngIf="!isLoading && !lesson" class="error-message">
+         <p>לא ניתן לטעון את פרטי השיעור.</p>
+     </div>
+  
+  </div>
+  

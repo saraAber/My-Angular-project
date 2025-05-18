@@ -7,7 +7,7 @@ import {
   HttpHeaders
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AuthService } from './auth.service'; // נתיב לשירות האותנטיקציה שלך
+import { AuthService } from '../services/auth.service'; // נתיב לשירות האותנטיקציה שלך
 console.log('Interceptor is running');
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {

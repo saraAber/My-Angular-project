@@ -14,8 +14,8 @@ export interface ConfirmationDialogData {
 
 @Component({
   selector: 'app-confirmation-dialog',
-  templateUrl: './confirmation-dialog-component.component.html',
-  styleUrls: ['./confirmation-dialog-component.component.css'],
+  templateUrl: './confirmation-dialog.component.html',
+  styleUrls: ['./confirmation-dialog.component.css'],
   standalone: true,
   imports: [
     CommonModule,

@@ -1,11 +1,37 @@
-<h2>Course Details</h2>
+<div class="course-details-container">
+  <div *ngIf="isLoading" class="loading-indicator">
+     <mat-spinner></mat-spinner>
+     <p>טוען פרטי קורס ושיעורים...</p>
+  </div>
 
-<div *ngIf="course">
-  <h3>{{ course.title}}</h3>
-  <p>Description: {{ course.description }}</p>
-  <p>TeacherId: {{ course.teacherId }}</p>
-  <button  [routerLink]="['/courses']">Back to courses</button>
-</div>
-<div *ngIf="!course">
-  <p>Course not found.</p>
+  <mat-card *ngIf="!isLoading && course" class="course-card">
+    <mat-card-title>{{ course.title }}</mat-card-title>
+    <mat-card-content>
+      <p>{{ course.description }}</p>
+      </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="!isLoading && lessons.length > 0" class="lessons-card">
+    <mat-card-title>שיעורים בקורס</mat-card-title>
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item *ngFor="let lesson of lessons">
+          <button mat-button class="lesson-button" (click)="viewLessonDetails(lesson.id)">
+            <mat-icon>play_circle_outline</mat-icon> {{ lesson.title }}
+          </button>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="!isLoading && lessons.length === 0 && course" class="no-lessons-card">
+      <mat-card-content>
+          <p>אין שיעורים זמינים עבור קורס זה כרגע.</p>
+      </mat-card-content>
+  </mat-card>
+
+   <div *ngIf="!isLoading && !course" class="error-message">
+       <p>לא ניתן לטעון את פרטי הקורס.</p>
+   </div>
+
 </div>
