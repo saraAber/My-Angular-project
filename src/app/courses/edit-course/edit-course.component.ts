@@ -32,7 +32,7 @@ export class EditCourseComponent {
   constructor(
     private fb: FormBuilder,
     private courseService: CourseService,
-    private dialogRef: MatDialogRef<EditCourseComponent>,
+    public dialogRef: MatDialogRef<EditCourseComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { id: number, title: string, description: string },
     private authService: AuthService
   ) {
@@ -54,12 +54,14 @@ export class EditCourseComponent {
       this.isLoading = false;
       return;
     }
-    this.courseService.updateCourse(this.data.id, title, description, teacherId).subscribe({
+    this.courseService.updateCourse(this.data.id, title, description).subscribe({
       next: (res: any) => {
         this.successMsg = 'הקורס עודכן בהצלחה!';
         this.isLoading = false;
-        this.courseUpdated.emit();
-        this.dialogRef.close(true);
+        setTimeout(() => {
+          this.courseUpdated.emit();
+          this.dialogRef.close(true);
+        }, 1500);
       },
       error: (err: any) => {
         this.errorMsg = 'אירעה שגיאה בעדכון הקורס';

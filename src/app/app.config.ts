@@ -5,6 +5,14 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations'; //
 
 import { routes } from './app.routes';
 
+import { HTTP_INTERCEPTORS, withInterceptorsFromDi } from '@angular/common/http';
+import { AuthInterceptor } from './auth/auth.interceptor';
+
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes), provideHttpClient(), provideNoopAnimations()] // הוספה ל-providers
+  providers: [
+    provideRouter(routes),
+    provideHttpClient(withInterceptorsFromDi()),
+    provideNoopAnimations(),
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ]
 };

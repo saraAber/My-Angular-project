@@ -6,6 +6,33 @@
   gap: 20px;
   direction: rtl;
 }
+
+@media (max-width: 900px) {
+  .custom-form {
+    max-width: 98vw;
+    padding: 18px 2vw;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px #0001;
+  }
+  .custom-form input, .custom-form button {
+    font-size: 1.08em;
+    padding: 13px 0;
+    width: 100%;
+    min-width: 0;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .custom-form {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    direction: rtl;
+  }
+}
+
 .custom-float-label-group {
   position: relative;
   margin-bottom: 1.5rem;

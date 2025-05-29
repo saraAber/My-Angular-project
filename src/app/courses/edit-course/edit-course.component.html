@@ -1,30 +1,31 @@
-<form [formGroup]="courseForm" (ngSubmit)="updateCourse()" class="edit-course-form">
-  <mat-form-field appearance="outline">
-    <mat-label>שם הקורס</mat-label>
-    <input matInput formControlName="title" required>
-    <mat-error *ngIf="courseForm.controls['title'].hasError('required')">
-      חובה להזין שם קורס
-    </mat-error>
-    <mat-error *ngIf="courseForm.controls['title'].hasError('minlength')">
-      שם הקורס חייב להכיל לפחות 3 תווים
-    </mat-error>
-  </mat-form-field>
+<div class="edit-course-dialog-card" dir="rtl">
+  <h2 class="dialog-title">עריכת קורס ✏️</h2>
+  <div class="dialog-subtitle">עדכנו את פרטי הקורס שלכם, ושמרו את השינויים.</div>
+  <form [formGroup]="courseForm" (ngSubmit)="updateCourse()" class="edit-course-form">
+    <div class="form-fields">
+      <label class="field-label" for="courseTitle">כותרת הקורס</label>
+      <input id="courseTitle" class="custom-input" formControlName="title" required>
+      <div class="mat-error" *ngIf="courseForm.controls['title'].hasError('required')">
+        חובה להזין כותרת קורס
+      </div>
+      <div class="mat-error" *ngIf="courseForm.controls['title'].hasError('minlength')">
+        כותרת הקורס חייבת להכיל לפחות 3 תווים
+      </div>
 
-  <mat-form-field appearance="outline">
-    <mat-label>תיאור הקורס</mat-label>
-    <textarea matInput formControlName="description" required></textarea>
-    <mat-error *ngIf="courseForm.controls['description'].hasError('required')">
-      חובה להזין תיאור
-    </mat-error>
-    <mat-error *ngIf="courseForm.controls['description'].hasError('minlength')">
-      תיאור הקורס חייב להכיל לפחות 10 תווים
-    </mat-error>
-  </mat-form-field>
-
-  <button mat-raised-button color="primary" type="submit" [disabled]="courseForm.invalid || isLoading">
-    עדכן קורס
-  </button>
-
-  <div class="success-msg" *ngIf="successMsg">{{ successMsg }}</div>
-  <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
-</form>
+      <label class="field-label" for="courseDescription">תיאור הקורס</label>
+      <textarea id="courseDescription" class="custom-textarea" formControlName="description" required></textarea>
+      <div class="mat-error" *ngIf="courseForm.controls['description'].hasError('required')">
+        חובה להזין תיאור
+      </div>
+      <div class="mat-error" *ngIf="courseForm.controls['description'].hasError('minlength')">
+        תיאור הקורס חייב להכיל לפחות 10 תווים
+      </div>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="cancel-btn" (click)="dialogRef.close()">ביטול</button>
+      <button type="submit" class="save-btn" [disabled]="courseForm.invalid || isLoading">עדכן קורס</button>
+    </div>
+    <div class="success-msg" *ngIf="successMsg">{{ successMsg }}</div>
+    <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+  </form>
+</div>

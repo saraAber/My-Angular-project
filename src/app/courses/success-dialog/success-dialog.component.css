@@ -43,12 +43,24 @@
 
 /* Message styles */
 .dialog-message {
-  font-size: 1.05rem;
+  font-size: 1.08em;
   line-height: 1.5;
   color: #424242;
   margin: 0 0 24px;
   direction: rtl;
   text-align: center;
+}
+
+.dialog-message a {
+  color: #1976d2;
+  text-decoration: underline;
+  font-weight: bold;
+  transition: color 0.18s;
+}
+
+.dialog-message a:hover {
+  color: #0d47a1;
+  text-decoration: underline;
 }
 
 /* Action buttons */
@@ -107,7 +119,28 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 480px) {
+@media (max-width: 900px) {
+  .success-dialog-content {
+    max-width: 98vw;
+    min-width: 0;
+    padding: 22px 3vw;
+    border-radius: 18px;
+    font-size: 1.09em;
+  }
+  .success-dialog-title {
+    font-size: 1.22em;
+  }
+  .success-dialog-btn {
+    font-size: 1.11em;
+    padding: 15px 0;
+    border-radius: 8px;
+    width: 100%;
+    min-width: 0;
+    margin: 0 0 10px 0;
+  }
+}
+
+@media (max-width: 600px) {
   .dialog-container {
     padding: 20px 16px;
   }

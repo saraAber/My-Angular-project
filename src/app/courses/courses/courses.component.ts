@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRe
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { MatDialog, MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../shared';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule, MatSpinner } from '@angular/material/progress-spinner';
@@ -14,7 +15,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatChipListbox, MatChipOption } from '@angular/material/chips';
 import { FormsModule } from '@angular/forms';
 
 // Import required modules
@@ -40,7 +40,7 @@ import { catchError, finalize, map, takeUntil, tap } from 'rxjs/operators';
 import { Course, CourseService, Student } from '../course.service';
 import { AuthService } from '../../auth/auth.service';
 import { CreateCourseComponent } from '../create-course/create-course.component';
-import { ConfirmDialogComponent, TruncatePipe } from '../../shared';
+import { EditCourseComponent } from '../edit-course/edit-course.component';
 
 @Component({
   selector: 'app-courses',
@@ -52,13 +52,10 @@ import { ConfirmDialogComponent, TruncatePipe } from '../../shared';
     CommonModule,
     RouterModule,
     FormsModule,
-    ...MATERIAL_MODULES,
-    MatChipListbox,
-    MatChipOption,
-    TruncatePipe
+    ...MATERIAL_MODULES
   ],
   templateUrl: './courses.component.html',
-  styleUrls: ['./courses.component.css'],
+  styleUrls: ['./courses.component.css', './courses-modern-card.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CoursesComponent implements OnInit, OnDestroy {
@@ -79,7 +76,8 @@ export class CoursesComponent implements OnInit, OnDestroy {
   isLoading = false;
   isEnrolling = false;
   error: string | null = null;
-  showAllCourses = false;
+  showAllCourses = true;
+  showManageCourses = false; // חדש: ניהול הקורסים שלי
   searchQuery = '';
   
   // User info
@@ -96,25 +94,16 @@ export class CoursesComponent implements OnInit, OnDestroy {
   // Track if component is initialized
   private isInitialized = false;
   
-  // Track enrollment state
-  isEnrolling = false;
-  
-  // Expose Math object to template
-  Math = Math;
-  
-  // Initialize pagination
-  pageSize = 10;
-  currentPage = 0;
-  totalItems = 0;
+
 
   constructor(
     private courseService: CourseService,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
+    public dialog: MatDialog,
     private activatedRoute: ActivatedRoute
   ) {
     this.userId = this.authService.getUserId();
@@ -143,14 +132,61 @@ export class CoursesComponent implements OnInit, OnDestroy {
   }
   
   // Toggle between all courses and enrolled courses
-  toggleCoursesView(): void {
-    this.showAllCourses = !this.showAllCourses;
-    this.currentPage = 0; // Reset to first page
+// מעבר ל'הקורסים שלי'
+  // מעבר ל'הקורסים שלי'
+  onShowMine(): void {
+    this.showAllCourses = false;
+    this.showManageCourses = false;
+    this.currentPage = 0;
+    // שלוף רק את הקורסים אליהם המשתמש רשום והצג אותם
+    this.courseService.getCoursesByStudentId(this.userId!).subscribe({
+      next: (enrolledCourses) => {
+        this.allCourses = [...enrolledCourses];
+        this.enrolledCourses = [...enrolledCourses];
+        this.updateFilteredCourses();
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.updateFilteredCourses();
+      }
+    });
+  }
+
+  // מעבר ל'כל הקורסים'
+  onShowAll(): void {
+    this.showAllCourses = true;
+    this.showManageCourses = false;
+    this.currentPage = 0;
+    // שלוף את כל הקורסים מהשרת והצג אותם
+    this.courseService.getCourses(true).subscribe({
+      next: (courses) => {
+        this.allCourses = [...courses];
+        this.updateFilteredCourses();
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.updateFilteredCourses();
+      }
+    });
+  }
+
+  // מעבר ל'ניהול הקורסים שלי'
+  onShowManage(): void {
+    this.showAllCourses = false;
+    this.showManageCourses = true;
+    this.currentPage = 0;
     this.updateFilteredCourses();
   }
-  
+
   // Update filtered courses based on current filters
   private updateFilteredCourses(): void {
+    // אם במצב ניהול, הצג רק קורסים שנוצרו על ידי המורה
+    if (this.showManageCourses && this.isTeacher) {
+      this.filteredCourses = this.allCourses.filter(course => course.teacherId === this.userId);
+      this.totalItems = this.filteredCourses.length;
+      this.cdr.markForCheck();
+      return;
+    }
     let filtered = [...this.allCourses];
     
     // Apply search filter
@@ -164,12 +200,13 @@ export class CoursesComponent implements OnInit, OnDestroy {
       );
     }
     
-    // Apply enrolled filter
-    if (!this.showAllCourses && this.userId) {
-      filtered = filtered.filter(course => 
-        this.isEnrolled(course) || this.isCourseTeacher(course)
-      );
-    }
+    // במצב 'הקורסים שלי' (showAllCourses=false), הצג רק קורסים שהמשתמש רשום אליהם או שהוא המורה שלהם
+    // במסך 'הקורסים שלי' – אין צורך בסינון, פשוט מציגים את כל הקורסים שהובאו מהשרת
+if (!this.showAllCourses && this.userId) {
+  filtered = [...this.allCourses];
+}
+    // במצב 'כל הקורסים' (showAllCourses=true), הצג את כל הקורסים ללא סינון
+    // (אין צורך לסנן, filtered כבר כולל את כל הקורסים)
     
     // Update pagination
     this.totalItems = filtered.length;
@@ -184,7 +221,8 @@ export class CoursesComponent implements OnInit, OnDestroy {
   // Check if current user is enrolled in a course
   isEnrolled(course: Course): boolean {
     if (!this.userId) return false;
-    return this.enrolledCourses.some(c => c.id === course.id);
+    // בדוק גם את השדה המקומי וגם את רשימת ההרשמות
+    return !!course.enrolled || this.enrolledCourses.some(c => c.id === course.id);
   }
   
   // Check if current user is the teacher of a course
@@ -192,18 +230,27 @@ export class CoursesComponent implements OnInit, OnDestroy {
     return course.teacherId === this.userId;
   }
   
-  // Update enrolled courses list
+  // שליפת קורסים אליהם המשתמש רשום מהשרת ועדכון סטטוס ההרשמה
   updateEnrolledCourses(): void {
     if (!this.userId) return;
-    
-    this.enrolledCourses = this.courses.filter(course => 
-      course.students?.some((student: Student | number) => {
-        if (typeof student === 'number') {
-          return student === this.userId;
-        }
-        return student.id === this.userId;
-      })
-    );
+    this.courseService.getCoursesByStudentId(this.userId).subscribe({
+      next: (enrolledCourses: Course[]) => {
+        const enrolledIds = new Set(enrolledCourses.map(c => c.id));
+        this.enrolledCourses = [...enrolledCourses];
+        // עדכן דגל enrolled בכל קורס
+        this.allCourses.forEach(course => {
+          course.enrolled = enrolledIds.has(course.id);
+        });
+        this.updateFilteredCourses();
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.enrolledCourses = [];
+        this.allCourses.forEach(course => (course.enrolled = false));
+        this.updateFilteredCourses();
+        this.cdr.markForCheck();
+      }
+    });
   }
   
   // Open create course dialog
@@ -220,27 +267,83 @@ export class CoursesComponent implements OnInit, OnDestroy {
     });
   }
   
-  // Enroll in a course
-  enroll(courseId: number): void {
+  // הרשמה/יציאה מקורס (תמיד מרענן מהשרת!)
+  enrollOrUnenroll(course: Course): void {
+    if (!this.userId) {
+      this.showError('יש להתחבר למערכת לפני ההרשמה לקורס');
+      this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
     if (this.isEnrolling) return;
-    
     this.isEnrolling = true;
-    this.courseService.enrollInCourse(courseId).pipe(
-      takeUntil(this.destroy$),
-      finalize(() => {
-        this.isEnrolling = false;
-        this.cdr.markForCheck();
-      })
-    ).subscribe({
-      next: () => {
-        this.showSuccess('ההרשמה בוצעה בהצלחה!');
-        this.loadCourses(true);
-      },
-      error: (error) => {
-        console.error('Failed to enroll in course', error);
-        this.showError('אירעה שגיאה בהרשמה לקורס');
-      }
-    });
+    this.cdr.markForCheck();
+
+    // אם כבר רשום - בצע יציאה
+    if (this.isEnrolled(course)) {
+      this.courseService.unenrollStudent(course.id, this.userId)
+        .pipe(
+          takeUntil(this.destroy$),
+          tap(() => {
+            this.showSuccess('יצאת מהקורס בהצלחה!');
+            this.updateEnrolledCourses(); // רענון מהשרת בלבד
+          }),
+          catchError((error: any) => {
+            // אם שגיאת 404 או 500 - נניח שהמשתמש כבר לא רשום
+            if (error && (error.status === 404 || error.status === 500)) {
+              this.showSuccess('ייתכן שכבר אינך רשום לקורס זה, או שיש בעיה זמנית. הכפתור עודכן להרשמה.');
+              course.enrolled = false;
+              this.enrolledCourses = this.enrolledCourses.filter(c => c.id !== course.id);
+              this.updateEnrolledCourses();
+              this.updateFilteredCourses();
+              this.cdr.markForCheck();
+            } else {
+              console.error('Failed to unenroll from course:', error);
+              const errorMessage = error.message || 'שגיאה ביציאה מהקורס. נסה שוב מאוחר יותר.';
+              this.showError(errorMessage);
+            }
+            return of(null);
+          }),
+          finalize(() => {
+            this.isEnrolling = false;
+            this.cdr.markForCheck();
+          })
+        )
+        .subscribe();
+    } else {
+      // אחרת - בצע הרשמה
+      this.courseService.enrollInCourse(course.id, this.userId)
+        .pipe(
+          takeUntil(this.destroy$),
+          tap(() => {
+            this.showSuccess('נרשמת בהצלחה לקורס!');
+            this.updateEnrolledCourses(); // רענון מהשרת בלבד
+          }),
+          catchError((error: any) => {
+            // בדיקת שגיאת הרשמה כפולה
+            // כל שגיאת 500 בהרשמה תיחשב כהצלחה (המשתמש כבר רשום)
+            if (error && error.status === 500) {
+              this.showSuccess('ייתכן שכבר נרשמת לקורס זה, או שיש בעיה זמנית. הכפתור עודכן ליציאה מהקורס.');
+              course.enrolled = true;
+              if (!this.enrolledCourses.some(c => c.id === course.id)) {
+                this.enrolledCourses.push(course);
+              }
+              this.updateEnrolledCourses();
+              this.updateFilteredCourses();
+              this.cdr.markForCheck();
+            } else {
+              console.error('Failed to enroll in course:', error);
+              const errorMessage = error.message || 'שגיאה בהרשמה לקורס. נסה שוב מאוחר יותר.';
+              this.showError(errorMessage);
+            }
+            return of(null);
+          }),
+          finalize(() => {
+            this.isEnrolling = false;
+            this.cdr.markForCheck();
+          })
+        )
+        .subscribe();
+    }
   }
   
   private initializeComponent(): void {
@@ -252,6 +355,9 @@ export class CoursesComponent implements OnInit, OnDestroy {
       }
       if (params['view']) {
         this.showAllCourses = params['view'] === 'all';
+      } else {
+        // ברירת מחדל: הצג את כל הקורסים
+        this.showAllCourses = true;
       }
       
       if (!this.isInitialized) {
@@ -299,8 +405,8 @@ export class CoursesComponent implements OnInit, OnDestroy {
           courses.map(course => ({
             ...course,
             name: course.title, // Backward compatibility
-            teacherName: course.teacherName || 'ללא מורה',
-            enrolledStudents: course.enrolledStudents || 0,
+            teacherName: course.teacherName,
+            
             startDate: course.startDate ? new Date(course.startDate) : new Date(),
             students: course.students || [],
             // Add default values for new properties
@@ -348,13 +454,33 @@ export class CoursesComponent implements OnInit, OnDestroy {
   }
 
   // Show success message
-  private showSuccess(message: string): void {
-    this.snackBar.open(message, 'סגור', { duration: 3000 });
+  public showSuccess(message: string): void {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'הצלחה',
+        message: message,
+        confirmText: 'סגור',
+        cancelText: '',
+        confirmColor: 'primary'
+      },
+      panelClass: 'centered-dialog',
+      disableClose: false
+    });
   }
 
   // Show error message
-  private showError(message: string): void {
-    this.snackBar.open(message, 'סגור', { duration: 5000, panelClass: ['error-snackbar'] });
+  public showError(message: string): void {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'שגיאה',
+        message: message,
+        confirmText: 'סגור',
+        cancelText: '',
+        confirmColor: 'warn'
+      },
+      panelClass: 'centered-dialog',
+      disableClose: false
+    });
   }
   
   // Apply course filters based on current view and search
@@ -385,131 +511,87 @@ export class CoursesComponent implements OnInit, OnDestroy {
     this.router.navigate(['/courses/new']);
   }
   
-  enrollInCourse(courseId: number): void {
-    if (!this.userId) {
-      this.showError('יש להתחבר למערכת לפני ההרשמה לקורס');
-      this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
-      return;
-    }
-    
-    this.isEnrolling = true;
-    this.cdr.markForCheck();
-    
-    this.courseService.enrollInCourse(courseId, this.userId)
-      .pipe(
-        takeUntil(this.destroy$),
-        tap(() => {
-          this.showSuccess('נרשמת בהצלחה לקורס!');
-          // Update local state without full reload for better UX
-          const course = this.allCourses.find(c => c.id === courseId);
-          if (course) {
-            course.enrolled = true;
-            course.enrolledStudents = (course.enrolledStudents || 0) + 1;
-            this.updateFilteredCourses();
-          }
-        }),
-        catchError((error: Error) => {
-          console.error('Failed to enroll in course:', error);
-          const errorMessage = error.message || 'שגיאה בהרשמה לקורס. נסה שוב מאוחר יותר.';
-          this.showError(errorMessage);
-          return of(null);
-        }),
-        finalize(() => {
-          this.isEnrolling = false;
-          this.cdr.markForCheck();
-        })
-      )
-      .subscribe();
+  enrollInCourse(courseId: number, userId: number): void {
+  if (!this.userId) {
+    this.showError('יש להתחבר למערכת לפני ההרשמה לקורס');
+    this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+    return;
   }
 
-  deleteCourse(courseId: number): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '350px',
+  this.isEnrolling = true;
+  this.cdr.markForCheck();
+
+  this.courseService.enrollInCourse(courseId, userId)
+    .pipe(
+      takeUntil(this.destroy$),
+      tap(() => {
+        this.showSuccess('נרשמת בהצלחה לקורס!');
+        this.courseService.deleteCourse(courseId)
+          .pipe(
+            takeUntil(this.destroy$),
+            tap(() => {
+              this.allCourses = this.allCourses.filter(c => c.id !== courseId);
+              this.updateFilteredCourses();
+            }),
+            catchError((error: Error) => {
+              console.error('Failed to delete course:', error);
+              const errorMessage = error.message || 'שגיאה במחיקת הקורס. נסה שוב מאוחר יותר.';
+              this.showError(errorMessage);
+              return of(null);
+            }),
+            finalize(() => {
+              this.isLoading = false;
+              this.cdr.markForCheck();
+            })
+          )
+          .subscribe();
+      })
+    )
+    .subscribe();
+  }
+
+  // פתיחת דיאלוג עריכת קורס
+  editCourse(course: Course): void {
+    const dialogRef = this.dialog.open(EditCourseComponent, {
+      width: '420px',
       data: {
-        title: 'מחיקת קורס',
-        message: 'האם אתה בטוח שברצונך למחוק קורס זה? פעולה זו לא ניתנת לביטול.',
-        confirmText: 'מחק',
-        cancelText: 'ביטול',
-        isError: true
+        id: course.id,
+        title: course.title,
+        description: course.description
       }
     });
-
-    dialogRef.afterClosed()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(result => {
-        if (result) {
-          this.isLoading = true;
-          this.cdr.markForCheck();
-          
-          this.courseService.deleteCourse(courseId)
-            .pipe(
-              takeUntil(this.destroy$),
-              tap(() => {
-                this.showSuccess('הקורס נמחק בהצלחה');
-                // Remove from local state for immediate feedback
-                this.allCourses = this.allCourses.filter(c => c.id !== courseId);
-                this.updateFilteredCourses();
-              }),
-              catchError((error: Error) => {
-                console.error('Failed to delete course:', error);
-                const errorMessage = error.message || 'שגיאה במחיקת הקורס. נסה שוב מאוחר יותר.';
-                this.showError(errorMessage);
-                return of(null);
-              }),
-              finalize(() => {
-                this.isLoading = false;
-                this.cdr.markForCheck();
-              })
-            )
-            .subscribe();
-        }
-      });
-  }
-
-  enroll(courseId: number): void {
-    if (!this.userId) {
-      console.error('User not logged in');
-      return;
-    }
-    
-    this.isLoading = true;
-    this.cdr.markForCheck();
-    
-    this.courseService.enrollInCourse(courseId, this.userId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.loadCourses();
-        },
-        error: (err: any) => {
-          console.error('Failed to enroll in course:', err);
-          this.error = 'שגיאה בהרשמה לקורס. נסה שוב מאוחר יותר.';
-          this.isLoading = false;
-        }
-      });
-  }
-
-  private showSuccess(message: string): void {
-    this.snackBar.open(message, 'סגור', {
-      duration: 5000,
-      panelClass: ['success-snackbar'],
-      horizontalPosition: 'center',
-      verticalPosition: 'top',
-      direction: 'rtl'
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result) {
+        this.loadCourses();
+      }
     });
   }
-  
-  private showError(message: string): void {
-    this.snackBar.open(message, 'סגור', {
-      duration: 5000,
-      panelClass: ['error-snackbar'],
-      horizontalPosition: 'center',
-      verticalPosition: 'top',
-      direction: 'rtl'
+
+  // מחיקת קורס (עבור כפתור המחיקה בתבנית)
+  deleteCourse(courseId: number): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'מחיקת קורס',
+        message: 'האם אתה בטוח שברצונך למחוק את הקורס?',
+        confirmText: 'מחק',
+        cancelText: 'ביטול',
+        confirmColor: 'warn'
+      },
+      disableClose: false
     });
-  }
-  
-  trackByCourseId(index: number, course: Course): number {
-    return course.id;
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result) {
+        this.courseService.deleteCourse(courseId).subscribe({
+          next: () => {
+            this.showSuccess('הקורס נמחק בהצלחה');
+            this.allCourses = this.allCourses.filter((c: any) => c.id !== courseId);
+            this.updateFilteredCourses();
+          },
+          error: (error: any) => {
+            this.showError(error.message || 'שגיאה במחיקת הקורס. נסה שוב מאוחר יותר.');
+          }
+        });
+      }
+    });
   }
 }

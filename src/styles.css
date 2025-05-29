@@ -9,6 +9,48 @@
 
 /* You can add global styles to this file, and also import other style files */
 
+/* Centered dialog for success/error popups */
+.centered-dialog .mat-dialog-container {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 320px;
+  min-height: 120px;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px #0005, 0 1.5px 8px #0002;
+  background: #fff;
+  padding: 32px 32px 24px 32px;
+  text-align: center;
+  font-size: 1.18rem;
+}
+
+.centered-dialog .mat-dialog-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: var(--primary-blue);
+}
+
+.centered-dialog .mat-dialog-content {
+  margin-bottom: 18px;
+  font-size: 1.15rem;
+}
+
+.centered-dialog .mat-dialog-actions {
+  justify-content: center !important;
+  width: 100%;
+}
+
+/* Success and error coloring */
+.centered-dialog .mat-dialog-title, .centered-dialog .success {
+  color: var(--success-green) !important;
+}
+.centered-dialog .error {
+  color: #e53935 !important;
+}
+
+
 header {
   display: flex;
   align-items: center;

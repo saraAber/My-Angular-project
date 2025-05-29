@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { LessonService } from '../lesson.service';
+import { AutoResizeDirective } from '../../shared/directives/auto-resize.directive';
 
 @Component({
   selector: 'app-edit-lesson',
@@ -16,7 +17,8 @@ import { LessonService } from '../lesson.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatDialogModule
+    MatDialogModule,
+
   ],
   templateUrl: './edit-lesson.component.html',
   styleUrls: ['./edit-lesson.component.css'],

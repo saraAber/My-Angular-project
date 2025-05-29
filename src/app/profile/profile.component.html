@@ -1,6 +1,92 @@
-<div class="profile-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh;">
-  <div style="padding: 32px; background: #f5f5f5; border-radius: 16px; box-shadow: 0 2px 8px #0001; max-width: 400px; width: 100%; text-align: center;">
-    <h2 style="color:#1976d2; margin-bottom: 24px;">אזור הפרופיל האישי בפיתוח</h2>
-    <p style="font-size:1.1em; color:#333;">בקרוב תוכלו לעדכן את הפרטים האישיים שלכם כאן.<br>שווה להישאר!</p>
+<div class="profile-container">
+  <div class="profile-card">
+    <h2 class="profile-title">עריכת פרופיל</h2>
+    <form [formGroup]="profileForm" class="custom-form">
+      <div class="profile-field">
+        <label>שם מלא</label>
+        <input formControlName="name" type="text" class="profile-input" [disabled]="true">
+      </div>
+      <div class="profile-field">
+        <label>דוא"ל</label>
+        <input formControlName="email" type="email" class="profile-input" [disabled]="true">
+      </div>
+      <div class="profile-field">
+        <label>תפקיד</label>
+        <input formControlName="role" type="text" class="profile-input" [disabled]="true">
+      </div>
+    </form>
+    <div class="profile-msg-readonly">
+      האתר בפיתוח. לא ניתן לערוך את הפרופיל בשלב זה.
+    </div>
   </div>
 </div>
+
+<style>
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.profile-card {
+  padding: 32px;
+  background: #f5f5f5;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px #0001;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.profile-title {
+  color: #1976d2;
+  margin-bottom: 24px;
+}
+
+.custom-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+  width: 100%;
+}
+
+.profile-field {
+  width: 100%;
+  text-align: right;
+}
+
+.profile-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #bdbdbd;
+  border-radius: 6px;
+  font-size: 1em;
+  margin-top: 3px;
+  margin-bottom: 6px;
+  transition: border 0.18s;
+}
+.profile-input.invalid {
+  border: 1.5px solid #d32f2f;
+  background: #fff0f0;
+}
+.profile-btn {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 34px;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.18s;
+  margin-top: 8px;
+}
+.profile-btn:disabled {
+  background: #bdbdbd;
+  color: #eee;
+  cursor: not-allowed;
+}
+</style>

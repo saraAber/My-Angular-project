@@ -1,53 +1,52 @@
+<div class="dialog-title-wrapper">
+  <img src="assets/iconLogo.png" alt="לוגו אופק" class="dialog-watermark"> <!-- תמונת לוגו של הדיאלוג -->
+  <h2 class="custom-dialog-title">
+    ✏️ עריכת שיעור במסע הלמידה <!-- כותרת הדיאלוג -->
+  </h2>
+  <div class="dialog-subtitle">עדכן את שם ותוכן השיעור, וודא שהתלמידים מקבלים את המידע המעודכן ביותר.</div>
+</div>
+
 <div class="lesson-dialog-box">
-  <div class="dialog-title-wrapper" style="text-align:center">
-    <h2 class="custom-dialog-title" style="margin-bottom:0;">
-      ✨ עדכון שיעור במסע הלמידה
-    </h2>
-    <div class="dialog-subtitle" style="margin-top:0;">
-      עדכן את השיעור, שתף ידע מעודכן, והצע לתלמידים את המידע העדכני ביותר.
-    </div>
-  </div>
+  <form [formGroup]="lessonForm" (ngSubmit)="updateLesson()" class="custom-form"> <!-- טופס לעריכת שיעור עם Reactive Forms -->
   
-  <form [formGroup]="lessonForm" (ngSubmit)="updateLesson()" class="custom-form">
     <div class="custom-float-label-group">
-      <input formControlName="title" required class="custom-input" [ngClass]="{'filled': lessonForm.get('title')?.value}" />
+      <input formControlName="title" required class="custom-input"
+             [ngClass]="{'filled': lessonForm.get('title')?.value}" /> <!-- שדה להזנת שם השיעור -->
       <label [class.floated]="lessonForm.get('title')?.value || lessonForm.get('title')?.touched">
         שם השיעור
       </label>
       <div class="custom-error" *ngIf="lessonForm.get('title')?.touched && lessonForm.get('title')?.hasError('required')">
-        חובה להזין שם שיעור
+        חובה להזין שם שיעור <!-- הצגת שגיאה במקרה של שדה ריק -->
       </div>
       <div class="custom-error" *ngIf="lessonForm.get('title')?.touched && lessonForm.get('title')?.hasError('minlength')">
-        שם השיעור חייב להכיל לפחות 3 תווים
+        שם השיעור חייב להכיל לפחות 3 תווים <!-- הצגת שגיאה אם השם קצר מדי -->
       </div>
     </div>
-    
+
     <div class="custom-float-label-group">
-      <textarea formControlName="content" required class="custom-textarea" [ngClass]="{'filled': lessonForm.get('content')?.value}"></textarea>
+      <textarea formControlName="content" required class="custom-textarea"
+                [ngClass]="{'filled': lessonForm.get('content')?.value}"></textarea> <!-- שדה להזנת תוכן השיעור -->
       <label [class.floated]="lessonForm.get('content')?.value || lessonForm.get('content')?.touched">
         תוכן השיעור
       </label>
       <div class="custom-error" *ngIf="lessonForm.get('content')?.touched && lessonForm.get('content')?.hasError('required')">
-        חובה להזין תוכן שיעור
+        חובה להזין תוכן שיעור <!-- הצגת שגיאה במקרה של שדה ריק -->
       </div>
       <div class="custom-error" *ngIf="lessonForm.get('content')?.touched && lessonForm.get('content')?.hasError('minlength')">
-        תוכן השיעור חייב להכיל לפחות 10 תווים
+        תוכן השיעור חייב להכיל לפחות 10 תווים <!-- הצגת שגיאה אם התוכן קצר מדי -->
       </div>
     </div>
-    
-    <div class="custom-dialog-actions">
+
+    <div class="form-actions"> <!-- כפתורי פעולה -->
       <button type="submit" class="custom-btn add" [disabled]="lessonForm.invalid || isLoading">
-        <span *ngIf="!isLoading">עדכן שיעור</span>
-        <span *ngIf="isLoading">מעדכן...</span>
+        עדכן שיעור <!-- כפתור עדכון שיעור, מושבת אם יש שגיאות בטופס -->
       </button>
-      <button type="button" class="custom-btn cancel" (click)="onCancel()" [disabled]="isLoading">ביטול</button>
+      <button type="button" class="custom-btn cancel" (click)="onCancel()">
+        ביטול <!-- כפתור לביטול העריכה -->
+      </button>
     </div>
-    
-    <div class="success-msg" *ngIf="successMsg">
-      {{ successMsg }}
-    </div>
-    <div class="error-msg" *ngIf="errorMsg">
-      {{ errorMsg }}
-    </div>
+
+    <div class="success-msg" *ngIf="successMsg">{{ successMsg }}</div> <!-- הודעת הצלחה לאחר עדכון -->
+    <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div> <!-- הודעת שגיאה אם העדכון נכשל -->
   </form>
 </div>

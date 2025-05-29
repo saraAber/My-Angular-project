@@ -21,7 +21,7 @@ export interface Course {
   teacherId: number;
   teacherName?: string;
   enrolled?: boolean;
-  enrolledStudents?: number;
+  
   students?: Student[];
   startDate?: Date | string;
   endDate?: Date | string;
@@ -47,6 +47,12 @@ export interface Course {
   providedIn: 'root',
 })
 export class CourseService {
+  /**
+   * שליפת כל הקורסים אליהם תלמיד מסוים רשום
+   */
+  getCoursesByStudentId(userId: number): Observable<Course[]> {
+    return this.http.get<Course[]>(`${this.apiUrl}/student/${userId}`);
+  }
   private readonly apiUrl = 'http://localhost:3000/api/courses';
   private cache$: Observable<Course[]> | null = null;
   private lastFetchTime = 0;
@@ -92,37 +98,21 @@ export class CourseService {
     return this.http.get<Course>(`${this.apiUrl}/${courseId}`);
   }
 
-  // Enroll a user in a course
-  enrollInCourse(courseId: number, userId: number | null): Observable<void> {
-    if (!userId) {
+  /**
+   * הרשמת תלמיד לקורס
+   * @param courseId מזהה קורס
+   * @param userId מזהה המשתמש
+   */
+  enrollInCourse(courseId: number, userId: number | null): Observable<any> {
+    if (typeof userId !== 'number' || isNaN(userId)) {
+      console.error('[enrollInCourse] Invalid userId:', userId);
       return throwError(() => new Error('User not logged in'));
     }
-    
-    // Create a proper student object with the minimum required fields
-    const studentPayload = {
-      id: userId,
-      name: 'User ' + userId, // This will be updated from the server
-      email: `user${userId}@example.com` // This will be updated from the server
-    };
-    
-    return this.http.post<void>(`${this.apiUrl}/${courseId}/enroll`, { 
-      userId,
-      student: studentPayload
-    });
+    console.log('[enrollInCourse] Sending:', { courseId, userId });
+    // שליחת userId בלבד ב-body
+    return this.http.post<any>(`${this.apiUrl}/${courseId}/enroll`, { userId });
   }
-  
 
-
-  // ביטול הרשמת משתמש נוכחי מקורס
-  unenrollStudent(courseId: number): Observable<void> {
-    const userId = this.authService.getUserId();
-    if (!userId) {
-      return throwError(() => new Error('User not logged in'));
-    }
-    return this.http.request<void>('delete', `${this.apiUrl}/${courseId}/unenroll`, {
-      body: { userId }
-    });
-  }
 
   /**
    * Create a new course (teachers only)
@@ -150,6 +140,17 @@ export class CourseService {
       return throwError(() => new Error('User not logged in'));
     }
     return this.http.put<Course>(`${this.apiUrl}/${id}`, { title, description, teacherId });
+  }
+
+  /**
+   * הסרת תלמיד מקורס (יציאה)
+   * @param courseId מזהה קורס
+   */
+  unenrollStudent(courseId: number, userId: number): Observable<any> {
+    // ה-Authorization header יתווסף ע"י ה-HttpInterceptor
+    return this.http.delete<any>(`${this.apiUrl}/${courseId}/unenroll`, {
+      body: { userId }
+    });
   }
 
   /**

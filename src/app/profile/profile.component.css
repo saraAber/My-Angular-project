@@ -1,10 +1,33 @@
 .custom-form {
   max-width: 400px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 20px;
   direction: rtl;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px #0001;
+  padding: 24px 18px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .custom-form {
+    max-width: 98vw;
+    padding: 14px 2vw;
+    gap: 14px;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  .custom-form {
+    padding: 8px 1vw;
+    gap: 10px;
+    border-radius: 7px;
+  }
 }
 .custom-float-label-group {
   position: relative;
@@ -13,12 +36,26 @@
 .custom-float-label-group input {
   width: 100%;
   padding: 12px 12px 12px 0;
-  border: 1px solid var(--custom-primary, #1565c0);
-  border-radius: 4px;
-  font-size: 1rem;
+  border: 1.5px solid var(--custom-primary, #1565c0);
+  border-radius: 6px;
+  font-size: 1.09rem;
   background: #f8fafc;
   transition: border-color 0.2s;
   box-sizing: border-box;
+}
+@media (max-width: 600px) {
+  .custom-float-label-group input {
+    font-size: 1.01rem;
+    padding: 10px 8px 10px 0;
+    border-radius: 5px;
+  }
+}
+@media (max-width: 400px) {
+  .custom-float-label-group input {
+    font-size: 0.98rem;
+    padding: 8px 6px 8px 0;
+    border-radius: 4px;
+  }
 }
 .custom-float-label-group label {
   position: absolute;

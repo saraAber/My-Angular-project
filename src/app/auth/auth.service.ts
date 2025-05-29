@@ -15,6 +15,7 @@ interface UserInfo {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private api = 'http://localhost:3000/api/auth';
+private apiUser = 'http://localhost:3000/api/users';
   private userInfo = new BehaviorSubject<UserInfo>({
     id: null,
     role: 'guest',
@@ -29,10 +30,10 @@ export class AuthService {
     this.initializeFromStorage();
   }
 
+  // אתחול המשתמש מה-localStorage בלבד
   private initializeFromStorage(): void {
     const token = localStorage.getItem('token');
     if (!token) return;
-
     const userInfo: UserInfo = {
       id: this.getUserIdFromStorage(),
       role: this.getUserRoleFromToken(token),
@@ -40,7 +41,6 @@ export class AuthService {
       email: localStorage.getItem('email'),
       token
     };
-    
     this.userInfo.next(userInfo);
   }
 
@@ -54,14 +54,14 @@ export class AuthService {
   getProfile(): Observable<any> {
     const userId = this.getUserId();
     if (!userId) return throwError(() => new Error('No user ID'));
-    return this.http.get<any>(`${this.api}/users/${userId}`);
+    return this.http.get<any>(`${this.apiUser}/${userId}`);
   }
 
   updateProfile(data: { name: string; email: string }): Observable<any> {
     const userId = this.getUserId();
     if (!userId) return throwError(() => new Error('No user ID'));
     
-    return this.http.put<any>(`${this.api}/users/${userId}`, data).pipe(
+    return this.http.put<any>(`${this.apiUser}/${userId}`, data).pipe(
       tap(() => {
         this.updateUserInfo({ name: data.name, email: data.email });
       })
@@ -101,7 +101,12 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.clear();
+    // מחק רק את המפתחות הרלוונטיים ל-auth
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('role');
+    localStorage.removeItem('name');
+    localStorage.removeItem('email');
     this.userInfo.next({
       id: null,
       role: 'guest',
@@ -115,8 +120,9 @@ export class AuthService {
     return !!this.userInfo.value.token;
   }
 
+  // תמיד שלוף את הטוקן מ-localStorage בלבד
   getToken(): string | null {
-    return this.userInfo.value.token;
+    return localStorage.getItem('token');
   }
 
   getUserRole(): string {
@@ -126,8 +132,7 @@ export class AuthService {
   private updateUserInfo(updates: Partial<UserInfo>): void {
     const current = this.userInfo.value;
     const updated = { ...current, ...updates };
-    
-    // עדכן localStorage
+    // שמור תמיד ב-localStorage בלבד
     if (updates.token) localStorage.setItem('token', updates.token);
     if (updates.id) localStorage.setItem('userId', updates.id.toString());
     if (updates.role) localStorage.setItem('role', updates.role);
@@ -135,7 +140,6 @@ export class AuthService {
     else if (updates.name === null) localStorage.removeItem('name');
     if (updates.email) localStorage.setItem('email', updates.email);
     else if (updates.email === null) localStorage.removeItem('email');
-    
     this.userInfo.next(updated);
   }
 

@@ -9,7 +9,7 @@ import { EditCourseComponent } from '../edit-course/edit-course.component';
 @Component({
   selector: 'app-courses-list-editable',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatDialogModule, EditCourseComponent],
+  imports: [CommonModule, MatButtonModule, MatDialogModule],
   templateUrl: './courses-list-editable.component.html',
   styleUrls: ['./courses-list-editable.component.css']
 })

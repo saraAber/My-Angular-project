@@ -42,11 +42,7 @@ type UserRole = 'student' | 'teacher' | '';
     MatIconModule,
     
     // Dialogs (used in component methods)
-    SuccessDialogComponent,
-    AddLessonDialogComponent,
-    DeleteCourseDialogComponent,
-    DeleteLessonDialogComponent,
-    EditLessonComponent
+    // Removed unused dialog/component imports to resolve lint warnings
   ],
   templateUrl: './course-details.component.html',
   styleUrls: ['./course-details.component.css']
@@ -91,9 +87,20 @@ export class CourseDetailsComponent implements OnInit {
     this.courseService.getCourseById(this.courseId).subscribe({
       next: (data: Course) => {
         this.course = data;
-        this.isEnrolled = !!data.enrolled;
-        
         const myId = this.authService.getUserId();
+        // בדיקה אמיתית: האם המשתמש מופיע במערך הסטודנטים של הקורס
+        if (Array.isArray(data.students)) {
+          this.isEnrolled = data.students.some((student: any) => {
+            if (typeof student === 'object' && student !== null) {
+              return student.id === myId;
+            }
+            return student === myId;
+          });
+        } else {
+          // fallback: השתמש בדגל enrolled אם קיים
+          this.isEnrolled = !!data.enrolled;
+        }
+        
         this.isCourseOwner = this.userRole === 'teacher' && 
                            data.teacherId !== undefined && 
                            myId !== null &&
@@ -146,8 +153,7 @@ export class CourseDetailsComponent implements OnInit {
     const userId = this.authService.getUserId();
     this.courseService.enrollInCourse(this.courseId, userId).subscribe({
       next: () => {
-        this.isEnrolled = true;
-        console.log('[הרשמה] הצלחה – נרשמת לקורס', this.courseId);
+        this.loadCourseDetails(); // ריענון מהשרת!
         this.dialog.open(SuccessDialogComponent, {
           width: '300px',
           data: {
@@ -205,10 +211,20 @@ export class CourseDetailsComponent implements OnInit {
       return;
     }
     console.log('[יציאה] מנסה לצאת מהקורס', this.courseId);
-    this.courseService.unenrollStudent(this.courseId).subscribe({
+    const userId = this.authService.getUserId();
+    if (userId === null) {
+      this.dialog.open(SuccessDialogComponent, {
+        width: '300px',
+        data: {
+          title: 'שגיאה',
+          message: 'יש להתחבר למערכת לפני ביטול הרשמה'
+        }
+      });
+      return;
+    }
+    this.courseService.unenrollStudent(this.courseId, userId).subscribe({
       next: () => {
-        this.isEnrolled = false;
-        console.log('[יציאה] הצלחה – יצאת מהקורס', this.courseId);
+        this.loadCourseDetails(); // ריענון מהשרת!
         this.dialog.open(SuccessDialogComponent, {
           width: '300px',
           data: {

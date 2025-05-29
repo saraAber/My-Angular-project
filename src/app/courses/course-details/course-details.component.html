@@ -16,10 +16,7 @@
     <div class="lessons-inspiration">כל שיעור הוא עוד צעד במסע שלך!</div>
   </div>
 
-  <div *ngIf="userRole === 'student' && hasLessons" class="student-buttons">
-    <button *ngIf="!isEnrolled" class="custom-btn add" (click)="enrollCourse()">📚 הרשמה לקורס</button>
-    <button *ngIf="isEnrolled" class="custom-btn cancel" (click)="leaveCourse()">🚪 יציאה מהקורס</button>
-  </div>
+
 
   <ng-container *ngIf="lessons.length > 0; else noLessons">
     <div class="lessons-grid">

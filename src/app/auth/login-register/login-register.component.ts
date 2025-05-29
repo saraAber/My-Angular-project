@@ -5,14 +5,14 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { HttpClientModule } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-login-register',
   templateUrl: './login-register.component.html',
   styleUrls: ['./login-register.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, HttpClientModule,FormsModule, CommonModule, MatInputModule, MatButtonModule]
+  imports: [ReactiveFormsModule, FormsModule, CommonModule, MatInputModule, MatButtonModule]
 })
 export class LoginRegisterComponent implements OnInit {
   form!: FormGroup;
@@ -54,20 +54,8 @@ export class LoginRegisterComponent implements OnInit {
     if (this.isRegister) {
       this.auth.register(this.form.value).subscribe({
         next: (res: any) => {
-          let msg = 'נרשמת בהצלחה!';
-          // נסה לפרסר JSON אם אפשר
-          if (typeof res === 'string') {
-            try {
-              const parsed = JSON.parse(res);
-              msg = parsed.message || msg;
-            } catch {
-              // אם זה טקסט בלבד, לא נורא
-            }
-          } else if (res && res.message) {
-            msg = res.message;
-          }
-          alert(msg);
-          this.toggleMode();
+          // מעבר אוטומטי לדף הבית לאחר הרשמה מוצלחת
+          this.router.navigate(['/home'], { replaceUrl: true });
         },
         error: (err) => {
           if (
@@ -87,28 +75,8 @@ export class LoginRegisterComponent implements OnInit {
         password: this.form.value.password
       };
       this.auth.login(loginPayload.email, loginPayload.password).subscribe({
-        next: (res: any) => {
-          let msg = 'התחברת בהצלחה!';
-          let token = '';
-          // נסה לפרסר JSON אם אפשר
-          if (typeof res === 'string') {
-            try {
-              const parsed = JSON.parse(res);
-              token = parsed.token || '';
-              msg = parsed.message || msg;
-            } catch {
-              // אם זה טקסט בלבד, לא נורא
-              token = '';
-            }
-          } else if (res && res.token) {
-            token = res.token;
-            msg = res.message || msg;
-          }
-          if (token) {
-            localStorage.setItem('token', token);
-            console.log('טוקן:', token);
-          }
-          alert(msg);
+        next: () => {
+          alert('התחברת בהצלחה!');
           this.router.navigate(['/courses'], { replaceUrl: true });
         },
         error: (err) => {

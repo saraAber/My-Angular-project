@@ -33,6 +33,7 @@ app-root {
   padding-bottom: 20px; /* מרווח תחתון כדי שהפוטר לא ידביק את התוכן */
 }
 
+/* === Responsive Footer === */
 /* עיצוב הפוטר */
 .site-footer {
   flex-shrink: 0;

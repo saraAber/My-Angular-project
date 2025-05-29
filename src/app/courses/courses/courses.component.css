@@ -365,6 +365,18 @@ error-state .state-icon {
   }
 }
 
+@media (max-width: 900px) {
+  .courses-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .course-card {
+    min-width: 0;
+    max-width: 100vw;
+    font-size: 1.04em;
+  }
+}
+
 @media (max-width: 600px) {
   .courses-main-wrapper {
     padding: 16px 12px;

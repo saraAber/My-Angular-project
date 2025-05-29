@@ -1,0 +1,111 @@
+/* Modern Course Card Styles */
+.course-card-modern {
+  background: linear-gradient(135deg, #e3f7fd 60%, #fffde7 100%);
+  border: 2px solid #43a047;
+  border-radius: 22px;
+  box-shadow: 0 2px 12px #0002;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.13s;
+}
+.course-card-modern:hover {
+  transform: translateY(-5px) scale(1.025);
+  box-shadow: 0 6px 28px #388e3c22;
+}
+
+.course-card-modern-content {
+  padding: 28px 26px 22px 26px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.course-modern-header {
+  display: flex;
+  align-items: center;
+  gap: 1.1em;
+  margin-bottom: 10px;
+}
+.course-modern-icon {
+  font-size: 2.2em;
+  margin-left: 0.3em;
+}
+.course-modern-title-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
+}
+.course-modern-title {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #1565c0;
+  margin: 0;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 12px #43a04722;
+}
+.course-modern-teacher {
+  font-size: 1em;
+  color: #388e3c;
+  font-weight: 500;
+  margin-top: 0.1em;
+}
+
+.course-modern-badge {
+  background: #43a047;
+  color: #fff;
+  font-size: 0.99em;
+  border-radius: 12px;
+  padding: 0.18em 0.8em;
+  margin-right: 0.5em;
+  font-weight: 600;
+  box-shadow: 0 2px 8px #43a04733;
+}
+
+.course-modern-desc {
+  font-size: 1.08em;
+  color: #222;
+  margin: 0 0 10px 0;
+  min-height: 46px;
+}
+.course-modern-meta {
+  display: flex;
+  gap: 1.6em;
+  margin-bottom: 8px;
+  color: #444;
+  font-size: 0.99em;
+}
+.meta-modern-item mat-icon {
+  font-size: 1em;
+  vertical-align: middle;
+  margin-left: 0.2em;
+}
+.course-modern-price-row {
+  margin-bottom: 10px;
+}
+.course-modern-price {
+  color: #2e7d32;
+  font-weight: bold;
+  font-size: 1.08em;
+}
+.course-modern-free {
+  color: #388e3c;
+  font-weight: bold;
+  font-size: 1.08em;
+}
+.course-modern-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 0.7em;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.course-modern-teacher-actions {
+  display: flex;
+  gap: 0.3em;
+  margin-right: 0.7em;
+}
