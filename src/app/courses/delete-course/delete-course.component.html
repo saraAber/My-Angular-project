@@ -1,0 +1,18 @@
+<div class="delete-course-dialog">
+  <div class="delete-course-icon">
+    <span aria-hidden="true">&#9888;&#65039;</span>
+  </div>
+  <div class="delete-course-title">אישור מחיקת קורס</div>
+  <div class="delete-course-warning">
+    פעולה זו תמחק לצמיתות את הקורס וכל השיעורים שבו!
+  </div>
+  <div class="delete-course-details">
+    האם אתה בטוח שברצונך למחוק את הקורס:
+    <br>
+    <strong>{{ data.title }}</strong>
+  </div>
+  <div class="mat-dialog-actions">
+    <button mat-button (click)="onNoClick()">לא</button>
+    <button mat-raised-button color="warn" (click)="onYesClick()">כן, מחק</button>
+  </div>
+</div>

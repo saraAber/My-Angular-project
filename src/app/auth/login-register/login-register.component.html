@@ -1,0 +1,56 @@
+<div class="login-container">
+  <h2 class="custom-dialog-title">{{ isRegister ? 'הרשמה' : 'התחברות' }}</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="custom-form">
+  <div class="custom-float-label-group" *ngIf="isRegister">
+  <input formControlName="name" required class="custom-input" [ngClass]="{'filled': form.get('name')?.value}" />
+  <label [class.floated]="form.get('name')?.value || form.get('name')?.touched">שם</label>
+  <div class="custom-error" *ngIf="form.get('name')?.touched && form.get('name')?.invalid">
+    <span *ngIf="form.get('name')?.hasError('required')">חובה להזין שם</span>
+  </div>
+</div>
+  <div class="custom-float-label-group">
+  <input formControlName="email" required class="custom-input" [ngClass]="{'filled': form.get('email')?.value}" />
+  <label [class.floated]="form.get('email')?.value || form.get('email')?.touched">אימייל</label>
+  <div class="custom-error" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+    <span *ngIf="form.get('email')?.hasError('required')">חובה להזין אימייל</span>
+    <span *ngIf="form.get('email')?.hasError('email')">אימייל לא תקין</span>
+  </div>
+</div>
+  <div class="custom-float-label-group">
+  <div class="password-input-wrapper">
+    <input formControlName="password"
+           required
+           [type]="showPassword ? 'text' : 'password'"
+           class="custom-input password-input"
+           [ngClass]="{'filled': form.get('password')?.value}" />
+    <button type="button" tabindex="-1" class="toggle-password-btn" (click)="toggleShowPassword()" aria-label="הצג/הסתר סיסמה">
+      <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="8" ry="5"/><circle cx="12" cy="12" r="2"/></svg>
+      <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1976d2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="8" ry="5"/><circle cx="12" cy="12" r="2"/><line x1="3" y1="21" x2="21" y2="3" stroke="#1976d2" /></svg>
+    </button>
+  </div>
+  <label [class.floated]="form.get('password')?.value || form.get('password')?.touched">סיסמה</label>
+  <div class="custom-error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+    <span *ngIf="form.get('password')?.hasError('required')">חובה להזין סיסמה</span>
+    <span *ngIf="form.get('password')?.hasError('minlength')">סיסמה חייבת להכיל לפחות 6 תווים</span>
+  </div>
+</div>
+  <div class="custom-float-label-group" *ngIf="isRegister">
+  <select formControlName="role" required class="custom-input" [ngClass]="{'filled': form.get('role')?.value}">
+    <option value="" disabled selected hidden></option>
+    <option value="student">תלמיד</option>
+    <option value="teacher">מורה</option>
+  </select>
+  <label [class.floated]="form.get('role')?.value || form.get('role')?.touched">תפקיד</label>
+  <div class="custom-error" *ngIf="form.get('role')?.touched && form.get('role')?.invalid">
+    <span *ngIf="form.get('role')?.hasError('required')">חובה לבחור תפקיד</span>
+  </div>
+</div>
+  <div *ngIf="errorMsg" class="login-error-msg">{{ errorMsg }}</div>
+  <button type="submit" [disabled]="form.invalid" class="custom-btn add">
+    {{ isRegister ? 'הירשם' : 'התחבר' }}
+  </button>
+    <button type="button" (click)="toggleMode()" class="custom-btn cancel" style="margin-right: 8px;">
+      {{ isRegister ? 'יש לי כבר חשבון' : 'צריך ליצור חשבון?' }}
+    </button>
+  </form>
+</div>

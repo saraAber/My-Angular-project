@@ -1,0 +1,30 @@
+<form [formGroup]="courseForm" (ngSubmit)="updateCourse()" class="edit-course-form">
+  <mat-form-field appearance="outline">
+    <mat-label>שם הקורס</mat-label>
+    <input matInput formControlName="title" required>
+    <mat-error *ngIf="courseForm.controls['title'].hasError('required')">
+      חובה להזין שם קורס
+    </mat-error>
+    <mat-error *ngIf="courseForm.controls['title'].hasError('minlength')">
+      שם הקורס חייב להכיל לפחות 3 תווים
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>תיאור הקורס</mat-label>
+    <textarea matInput formControlName="description" required></textarea>
+    <mat-error *ngIf="courseForm.controls['description'].hasError('required')">
+      חובה להזין תיאור
+    </mat-error>
+    <mat-error *ngIf="courseForm.controls['description'].hasError('minlength')">
+      תיאור הקורס חייב להכיל לפחות 10 תווים
+    </mat-error>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" type="submit" [disabled]="courseForm.invalid || isLoading">
+    עדכן קורס
+  </button>
+
+  <div class="success-msg" *ngIf="successMsg">{{ successMsg }}</div>
+  <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+</form>

@@ -1,24 +1,31 @@
-<div class="lesson-details-container">
-    <div *ngIf="isLoading" class="loading-indicator">
-       <mat-spinner></mat-spinner>
-       <p>טוען פרטי שיעור...</p>
-    </div>
-  
-    <mat-card *ngIf="!isLoading && lesson" class="lesson-card">
-      <mat-card-title>{{ lesson.title }}</mat-card-title>
-      <mat-card-content>
-        <p [innerHTML]="lesson.content"></p>
-      </mat-card-content>
-       <mat-card-actions align="end">
-          <button mat-button color="primary" (click)="goBackToCourse()">
-             <mat-icon>arrow_back</mat-icon> חזרה לקורס
-          </button>
-       </mat-card-actions>
-    </mat-card>
-  
-     <div *ngIf="!isLoading && !lesson" class="error-message">
-         <p>לא ניתן לטעון את פרטי השיעור.</p>
-     </div>
-  
+<div class="lesson-progress-bar">
+  <div class="lesson-progress" [style.width]="progress + '%'">
+    <span *ngIf="progress">{{progress}}%</span>
   </div>
-  
+</div>
+<div class="lesson-header">
+  <span class="lesson-icon">📘</span>
+  <h2 class="lesson-title">{{ lesson.title }}</h2>
+  <div class="lesson-inspiration">כל שיעור הוא צעד קדימה במסע שלך!</div>
+</div>
+<div class="lesson-card">
+  <span class="lesson-number">שיעור {{lessonNumber}}</span>
+  <div class="lesson-watermark"><img src="/assets/iconLogo.png" alt="לוגו" style="width: 2.7em; opacity: 0.12;" /></div>
+  <div class="lesson-content">{{ lesson.content }}</div>
+  <div class="lesson-actions">
+    <button class="lesson-btn start" [disabled]="lesson && lesson.completed" (click)="startLesson()">התחל שיעור</button>
+    <button class="lesson-btn done" [disabled]="!lesson || !lesson.completed">✔ סיים שיעור</button>
+    <ng-container *ngIf="lesson.hasVideo">
+      <span class="lesson-asset" title="וידאו"><i class="icon-video"></i></span>
+    </ng-container>
+    <ng-container *ngIf="lesson.hasFile">
+      <span class="lesson-asset" title="קובץ"><i class="icon-file"></i></span>
+    </ng-container>
+    <ng-container *ngIf="lesson.hasLink">
+      <span class="lesson-asset" title="קישור"><i class="icon-link"></i></span>
+    </ng-container>
+  </div>
+</div>
+<div *ngIf="isLoading" class="loading">
+  <p>🔄 טוען נתונים...</p>
+</div>

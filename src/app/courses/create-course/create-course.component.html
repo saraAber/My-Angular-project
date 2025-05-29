@@ -1,0 +1,33 @@
+<div class="dialog-title-wrapper">
+  <img src="assets/iconLogo.png" alt="לוגו אופק" class="dialog-watermark">
+  <h2 class="custom-dialog-title">
+    ✨ פתחו מסע חדש של למידה!
+  </h2>
+  <div class="dialog-subtitle">הוסיפו קורס, שתפו ידע, והצטרפו להשראה.</div>
+</div>
+<form [formGroup]="courseForm" (ngSubmit)="createCourse()" class="custom-form">
+  <div class="custom-float-label-group">
+    <input formControlName="title" required class="custom-input" [ngClass]="{'filled': courseForm.get('title')?.value}" />
+    <label [class.floated]="courseForm.get('title')?.value || courseForm.get('title')?.touched">כותרת הקורס</label>
+    <div class="custom-error" *ngIf="courseForm.get('title')?.touched && courseForm.get('title')?.invalid">
+      <span *ngIf="courseForm.get('title')?.hasError('required')">חובה להזין כותרת</span>
+      <span *ngIf="courseForm.get('title')?.hasError('minlength')">כותרת חייבת להכיל לפחות 3 תווים</span>
+    </div>
+  </div>
+  <div class="custom-float-label-group">
+    <textarea formControlName="description" required class="custom-textarea" [ngClass]="{'filled': courseForm.get('description')?.value}"></textarea>
+    <label [class.floated]="courseForm.get('description')?.value || courseForm.get('description')?.touched">תיאור הקורס</label>
+    <div class="custom-error" *ngIf="courseForm.get('description')?.touched && courseForm.get('description')?.invalid">
+      <span *ngIf="courseForm.get('description')?.hasError('required')">חובה להזין תיאור</span>
+      <span *ngIf="courseForm.get('description')?.hasError('minlength')">תיאור חייב להכיל לפחות 10 תווים</span>
+    </div>
+  </div>
+  <div class="form-actions">
+    <button type="submit" [disabled]="isLoading || courseForm.invalid" class="custom-btn add">
+      {{ isLoading ? 'שולח...' : 'צור קורס' }}
+    </button>
+    <button type="button" class="custom-btn cancel" (click)="onCancel()">ביטול</button>
+  </div>
+  <div *ngIf="successMsg" class="success-msg">{{ successMsg }}</div>
+  <div *ngIf="errorMsg" class="error-msg">{{ errorMsg }}</div>
+</form>

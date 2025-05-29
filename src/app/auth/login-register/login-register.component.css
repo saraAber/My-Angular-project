@@ -1,0 +1,117 @@
+.custom-form {
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  direction: rtl;
+}
+.custom-float-label-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+.custom-float-label-group input,
+.custom-float-label-group textarea,
+.custom-float-label-group select {
+  width: 100%;
+  padding: 12px 12px 12px 0;
+  border: 1px solid var(--custom-primary, #90caf9);
+  border-radius: 4px;
+  font-size: 1rem;
+  background: #eaeef3;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.password-input-wrapper {
+  position: relative;
+  direction: rtl;
+}
+.password-input {
+  padding-left: 38px !important;
+}
+.toggle-password-btn {
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0 2px;
+  margin: 0;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+.toggle-password-btn svg {
+  display: block;
+}
+
+.login-error-msg {
+  color: #d32f2f;
+  background: #fff5f5;
+  border: 1px solid #ffcdd2;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 1.07em;
+  font-weight: 500;
+  margin: 10px 0 6px 0;
+  padding: 8px 4px;
+}
+
+.custom-float-label-group label {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  color: #888;
+  background: transparent;
+  pointer-events: none;
+  font-size: 1rem;
+  transition: all 0.2s;
+  padding: 0 4px;
+}
+.custom-float-label-group input:focus + label,
+.custom-float-label-group textarea:focus + label,
+.custom-float-label-group select:focus + label,
+.custom-float-label-group input.filled + label,
+.custom-float-label-group textarea.filled + label,
+.custom-float-label-group select.filled + label,
+.custom-float-label-group label.floated {
+  top: -14px;
+  right: 8px;
+  font-size: 0.85rem;
+  color: var(--custom-primary, #90caf9);
+  background: #f8fafc;
+}
+.custom-textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+.custom-btn {
+  padding: 7px 18px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.custom-btn.add {
+  background: var(--custom-primary, #90caf9);
+  color: #222;
+}
+.custom-btn.cancel {
+  background: #f1f8ff;
+  color: var(--custom-primary, #1565c0);
+}
+.custom-btn:disabled {
+  background: #ccc;
+  color: #888;
+  cursor: not-allowed;
+}
+.custom-error {
+  color: var(--custom-error, #ff8a80);
+  font-size: 0.95em;
+  margin-top: 3px;
+}

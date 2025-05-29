@@ -1,0 +1,53 @@
+<div class="lesson-dialog-box">
+  <div class="dialog-title-wrapper" style="text-align:center">
+    <h2 class="custom-dialog-title" style="margin-bottom:0;">
+      ✨ עדכון שיעור במסע הלמידה
+    </h2>
+    <div class="dialog-subtitle" style="margin-top:0;">
+      עדכן את השיעור, שתף ידע מעודכן, והצע לתלמידים את המידע העדכני ביותר.
+    </div>
+  </div>
+  
+  <form [formGroup]="lessonForm" (ngSubmit)="updateLesson()" class="custom-form">
+    <div class="custom-float-label-group">
+      <input formControlName="title" required class="custom-input" [ngClass]="{'filled': lessonForm.get('title')?.value}" />
+      <label [class.floated]="lessonForm.get('title')?.value || lessonForm.get('title')?.touched">
+        שם השיעור
+      </label>
+      <div class="custom-error" *ngIf="lessonForm.get('title')?.touched && lessonForm.get('title')?.hasError('required')">
+        חובה להזין שם שיעור
+      </div>
+      <div class="custom-error" *ngIf="lessonForm.get('title')?.touched && lessonForm.get('title')?.hasError('minlength')">
+        שם השיעור חייב להכיל לפחות 3 תווים
+      </div>
+    </div>
+    
+    <div class="custom-float-label-group">
+      <textarea formControlName="content" required class="custom-textarea" [ngClass]="{'filled': lessonForm.get('content')?.value}"></textarea>
+      <label [class.floated]="lessonForm.get('content')?.value || lessonForm.get('content')?.touched">
+        תוכן השיעור
+      </label>
+      <div class="custom-error" *ngIf="lessonForm.get('content')?.touched && lessonForm.get('content')?.hasError('required')">
+        חובה להזין תוכן שיעור
+      </div>
+      <div class="custom-error" *ngIf="lessonForm.get('content')?.touched && lessonForm.get('content')?.hasError('minlength')">
+        תוכן השיעור חייב להכיל לפחות 10 תווים
+      </div>
+    </div>
+    
+    <div class="custom-dialog-actions">
+      <button type="submit" class="custom-btn add" [disabled]="lessonForm.invalid || isLoading">
+        <span *ngIf="!isLoading">עדכן שיעור</span>
+        <span *ngIf="isLoading">מעדכן...</span>
+      </button>
+      <button type="button" class="custom-btn cancel" (click)="onCancel()" [disabled]="isLoading">ביטול</button>
+    </div>
+    
+    <div class="success-msg" *ngIf="successMsg">
+      {{ successMsg }}
+    </div>
+    <div class="error-msg" *ngIf="errorMsg">
+      {{ errorMsg }}
+    </div>
+  </form>
+</div>

@@ -1,25 +1,15 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
-import { provideHttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './app/auth/interceptor';
-import { importProvidersFrom, Provider } from '@angular/core'; // <-- הוסף Provider
-import { RouterModule } from '@angular/router';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { routes } from './app/app.routes';
-import { AuthService } from './app/services/auth.service';
-import { CourseService } from './app/services/course.service';
-
-const authInterceptorProvider: Provider = { // <-- הגדר ספק
-  provide: HTTP_INTERCEPTORS,
-  useClass: AuthInterceptor,
-  multi: true,
-};
+import { AppComponent } from './app/app.component';
+import { AuthInterceptor } from './app/auth/auth.interceptor';
 
 bootstrapApplication(AppComponent, {
   providers: [
+    provideRouter(routes),
     provideHttpClient(),
-    authInterceptorProvider, // <-- השתמש בספק שהוגדר
-    AuthService,
-    CourseService,
-    importProvidersFrom(RouterModule.forRoot(routes))
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true } // ✅ תיקון השגיאה
   ]
-}).catch(err => console.error(err));
+}).catch(err => console.error("שגיאה באתחול:", err));

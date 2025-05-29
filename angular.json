@@ -21,15 +21,12 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
+              "src/assets",
+              "src/favicon.ico"
             ],
             "styles": [
-              "@angular/material/prebuilt-themes/rose-red.css",
-              "src/styles.css"
-            ],
+  "src/styles.css"
+],
             "scripts": []
           },
           "configurations": {
@@ -79,12 +76,6 @@
               "zone.js/testing"
             ],
             "tsConfig": "tsconfig.spec.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
             "styles": [
               "@angular/material/prebuilt-themes/rose-red.css",
               "src/styles.css"

@@ -1,0 +1,15 @@
+.edit-course-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+.success-msg {
+  color: var(--success-green);
+  margin-top: 10px;
+}
+.error-msg {
+  color: var(--accent-orange);
+  margin-top: 10px;
+}

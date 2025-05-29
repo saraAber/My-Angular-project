@@ -1,0 +1,198 @@
+.lesson-dialog-box,
+.custom-form {
+  max-width: 400px;
+  margin: 36px auto 24px auto;
+  background: #fff;
+  border: 2px solid #43a047;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px #0002;
+  padding: 32px 28px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  direction: rtl;
+  position: relative;
+  align-items: stretch;
+}
+
+.custom-dialog-title {
+  font-size: 1.35em;
+  font-weight: bold;
+  color: #2e7d32;
+  margin-top: 18px;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 12px #43a04722;
+  display: block;
+  text-align: center;
+  direction: rtl;
+  line-height: 1.2;
+  word-break: keep-all;
+  margin-bottom: 18px;
+}
+
+.custom-float-label-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.custom-float-label-group input,
+.custom-float-label-group textarea {
+  width: 100%;
+  padding: 12px 12px 12px 0;
+  border: 2px solid #43a047;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: #fff;
+  box-shadow: 0 1px 6px #43a04711;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.custom-float-label-group label {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  color: #888;
+  background: transparent;
+  pointer-events: none;
+  font-size: 1rem;
+  transition: all 0.2s;
+  padding: 0 4px;
+}
+
+.custom-float-label-group input:focus + label,
+.custom-float-label-group textarea:focus + label,
+.custom-float-label-group input.filled + label,
+.custom-float-label-group textarea.filled + label,
+.custom-float-label-group label.floated {
+  top: -14px;
+  right: 8px;
+  font-size: 0.85rem;
+  color: var(--custom-primary, #1565c0);
+  background: #f8fafc;
+}
+
+.custom-textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: stretch;
+  gap: 14px;
+  margin-top: 18px;
+  text-align: center;
+  width: 100%;
+}
+
+.dialog-subtitle {
+  font-size: 1.02em;
+  color: #388e3c;
+  margin-bottom: 6px;
+  margin-top: 0;
+  font-weight: 500;
+  text-align: center;
+  direction: rtl;
+}
+
+.custom-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 28px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  flex: 1;
+  max-width: 200px;
+}
+
+.custom-btn.add {
+  background-color: #43a047;
+  color: white;
+}
+
+.custom-btn.add:hover {
+  background-color: #388e3c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.custom-btn.add:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.custom-btn.cancel {
+  background-color: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.custom-btn.cancel:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.custom-error {
+  color: #d32f2f;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  text-align: right;
+  min-height: 1.2em;
+  line-height: 1.2;
+}
+
+.custom-input,
+.custom-textarea {
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #f8fafc;
+  color: #333;
+}
+
+.custom-input:focus,
+.custom-textarea:focus {
+  border-color: #43a047;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.2);
+  background-color: #fff;
+}
+
+.custom-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+input.custom-input.filled,
+textarea.custom-textarea.filled {
+  background-color: #fff;
+  border-color: #43a047;
+}
+.success-msg {
+  color: var(--success-green);
+  margin-top: 10px;
+}
+.error-msg {
+  color: var(--accent-orange);
+  margin-top: 10px;
+}

@@ -1,0 +1,311 @@
+.add-lesson-btn {
+  background: none;
+  color: #2e7d32;
+  border: 2px solid #43a047;
+  border-radius: 24px;
+  padding: 5px 16px;
+  font-size: 0.98em;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 10px #43a04722;
+  transition: background 0.16s, color 0.16s, border-color 0.16s, box-shadow 0.16s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 145px;
+  min-height: 40px;
+
+   
+}
+.add-lesson-btn:hover {
+  background: #eaffea;
+  box-shadow: 0 4px 24px #1daa2d22;
+}
+.add-lesson-btn .icon {
+  font-size: 1.3em;
+  color: #8e24aa;
+  margin-right: 6px;
+}
+.lesson-btn.delete {
+  min-width: 145px;
+  min-height: 40px;
+
+  background: none;
+  color: #b71c1c;
+  border: 2px solid #b71c1c;
+  border-radius: 24px;
+  padding: 5px 16px;
+  font-size: 0.98em;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 10px #43a04722;
+  transition: background 0.16s, color 0.16s, border-color 0.16s, box-shadow 0.16s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  
+}
+.lesson-btn.delete:hover {
+  background: #ffebee;
+  box-shadow: 0 4px 24px #1daa2d22;
+
+}
+
+.course-lessons-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.lessons-icon {
+  font-size: 2.1em;
+  vertical-align: middle;
+  margin-bottom: 8px;
+}
+.lessons-title {
+  font-size: 1.55em;
+  font-weight: bold;
+  color: #1565c0;
+  margin: 0 0 6px 0;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 12px #43a04722;
+}
+.lessons-inspiration {
+  font-size: 1.08em;
+  color: #388e3c;
+  margin-bottom: 6px;
+  margin-top: 0;
+  font-weight: 500;
+}
+.lessons-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 48px;
+  max-width: 900px;
+  margin: 0 auto 32px auto;
+  justify-items: center;
+}
+.lesson-card {
+  min-width: 340px;
+  margin-bottom: 10px;
+}
+@media (max-width: 700px) {
+  .lessons-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: 98vw;
+  }
+  .lesson-card {
+    min-width: 0;
+  }
+}
+@media (max-width: 700px) {
+  .lessons-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: 98vw;
+  }
+}
+@media (max-width: 700px) {
+  .lessons-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+.lesson-card {
+  background: linear-gradient(135deg, #e3f7fd 60%, #fffde7 100%);
+  border: 2px solid #43a047;
+  border-radius: 22px;
+  box-shadow: 0 2px 12px #0002;
+  padding: 28px 22px 22px 22px;
+  max-width: 390px;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  min-height: 140px;
+}
+.lesson-number {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: #fff;
+  color: #388e3c;
+  border: 2px solid #b9f6ca;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1em;
+  box-shadow: 0 1px 6px #43a04722;
+  z-index: 2;
+}
+.lesson-watermark {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  font-size: 3em;
+  opacity: 0.12;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+.lesson-title {
+  font-size: 1.18em;
+  font-weight: bold;
+  color: #2e7d32;
+  margin-bottom: 10px;
+  z-index: 2;
+  text-align: center;
+}
+.lesson-content {
+  font-size: 1.02em;
+  color: #333;
+  margin-bottom: 14px;
+  z-index: 2;
+  text-align: right;
+  direction: rtl;
+}
+.student-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 20px;
+  margin-right: 20px;
+  margin-left: 20px;
+  gap: 12px;
+}
+
+.action-buttons-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 18px;
+  margin-top: 32px;
+  margin-left: 32px;
+  margin-bottom: 18px;
+  flex-wrap: nowrap;
+}
+.lesson-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 6px;
+  z-index: 2;
+}
+.lesson-btn.edit {
+  min-width: 145px;
+  min-height: 40px;
+  background: none;
+  color: #1976d2;
+  border: 2px solid #1976d2;
+  border-radius: 22px;
+  padding: 5px 16px;
+  font-size: 0.98em;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 10px #43a04722;
+  transition: background 0.16s, color 0.16s, border-color 0.16s,box-shadow 0.16s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.lesson-btn.edit:hover {
+  background: #e3f2fd;
+  box-shadow: 0 4px 24px #1daa2d22;
+}
+
+@media (max-width: 600px) {
+  .lessons-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .lesson-card {
+    padding: 16px 4vw 16px 4vw;
+    max-width: 98vw;
+  }
+  .lesson-title {
+    font-size: 1em;
+  }
+  .lesson-number {
+    width: 28px;
+    height: 28px;
+    font-size: 0.95em;
+  }
+}
+.no-lessons {
+  background-color: #f3f4f6;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 18px;
+  color: #333;
+}
+
+/* === עיצוב כפתורי הרשמה/יציאה כמו הוספת קורס/שיעור === */
+.custom-btn {
+  padding: 7px 18px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.custom-btn.add {
+  background: none;
+  color: #2e7d32;
+  border: 2px solid #43a047;
+  border-radius: 24px;
+  padding: 6px 14px;
+  font-size: 0.92em;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 10px #43a04722;
+  transition: background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: auto;
+}
+.custom-btn.add:hover {
+  background: #b9f6ca;
+  color: #2e7d32;
+  border-color: #ffffff;
+  box-shadow: 0 4px 16px #fafffc33;
+  color: white;
+}
+.custom-btn.cancel {
+  background: none;
+  color: #b71c1c;
+  border: 2px solid #e57373;
+  border-radius: 24px;
+  padding: 6px 14px;
+  font-size: 0.92em;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 10px #e5737311;
+  transition: background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-right: 10px;
+  width: auto;
+}
+.custom-btn.cancel:hover {
+  background: #ffebee;
+  color: #b71c1c;
+  border-color: #b71c1c;
+  box-shadow: 0 4px 16px #e5737333;
+}
+.custom-btn:disabled {
+  background: #ccc;
+  color: #888;
+  cursor: not-allowed;
+}

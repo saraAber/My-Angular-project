@@ -1,0 +1,25 @@
+<div class="dialog-container" [class]="dialogClass">
+  <div class="dialog-header">
+    <div class="dialog-icon" *ngIf="icon">
+      <mat-icon>{{ icon }}</mat-icon>
+    </div>
+    <div class="dialog-emoji" *ngIf="!icon && emoji">
+      <span [attr.aria-label]="isError ? 'שגיאה' : 'הצלחה'">{{ emoji }}</span>
+    </div>
+    <h2 mat-dialog-title class="dialog-title">{{ data.title }}</h2>
+  </div>
+  
+  <mat-dialog-content>
+    <p class="dialog-message" [innerHTML]="data.message"></p>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button 
+      mat-flat-button 
+      color="primary" 
+      [class.error-button]="isError"
+      (click)="onClose()">
+      {{ isError ? 'הבנתי' : 'אישור' }}
+    </button>
+  </mat-dialog-actions>
+</div>

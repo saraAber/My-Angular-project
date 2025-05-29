@@ -1,0 +1,225 @@
+<div class="courses-main-wrapper" dir="rtl">
+  <!-- Page Header -->
+  <div class="page-header" *ngIf="!isLoading && !error">
+    <h1>{{ showAllCourses ? 'גלה קורסים חדשים' : 'הקורסים שלי' }}</h1>
+    <p *ngIf="!showAllCourses">הקורסים אליהם אתה רשום או שאתה מלמד</p>
+    <p *ngIf="showAllCourses">גלה קורסים חדשים והתחל ללמוד עוד היום</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="state-container loading-state">
+    <div class="loading-spinner"></div>
+    <h3>טוען קורסים...</h3>
+    <p>אנא המתן בזמן שאנחנו טוענים את רשימת הקורסים</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="state-container error-state">
+    <mat-icon class="state-icon">error_outline</mat-icon>
+    <h3>אירעה שגיאה</h3>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadCourses(true)">
+      <mat-icon>refresh</mat-icon>
+      נסה שוב
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !error && filteredCourses.length === 0" class="state-container empty-state">
+    <mat-icon class="state-icon">school</mat-icon>
+    <h3>אין קורסים להצגה</h3>
+    <p *ngIf="!showAllCourses">אין לך עדיין קורסים רשומים. הירשם לקורסים חדשים או צור קורס חדש אם אתה מורה.</p>
+    <p *ngIf="showAllCourses">אין קורסים זמינים כרגע. בדוק שוב מאוחר יותר.</p>
+    <div class="action-group" *ngIf="isTeacher || !showAllCourses">
+      <button *ngIf="isTeacher" mat-raised-button color="primary" (click)="openCreateCourseDialog()">
+        <mat-icon>add</mat-icon>
+        צור קורס חדש
+      </button>
+      <button *ngIf="!showAllCourses" mat-stroked-button (click)="toggleCoursesView()">
+        <mat-icon>explore</mat-icon>
+        גלה קורסים חדשים
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading && !error && filteredCourses.length > 0" class="courses-container">
+    <!-- Action Bar -->
+    <div class="action-bar">
+      <h2>{{ showAllCourses ? 'כל הקורסים' : 'הקורסים שלי' }}</h2>
+      
+      <div class="action-group">
+        <!-- Search Box -->
+        <mat-form-field appearance="outline" class="search-box">
+          <mat-label>חיפוש קורסים</mat-label>
+          <input matInput placeholder="הקלד לחיפוש..." (keyup)="applyFilter($event)">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        
+        <!-- View Toggle -->
+        <div class="view-toggle" *ngIf="isTeacher || enrolledCourses.length > 0">
+          <button [class.active]="!showAllCourses" (click)="showAllCourses = false">
+            <mat-icon>person</mat-icon>
+            שלי
+          </button>
+          <button [class.active]="showAllCourses" (click)="showAllCourses = true">
+            <mat-icon>public</mat-icon>
+            הכל
+          </button>
+        </div>
+        
+        <!-- Create Course Button -->
+        <button *ngIf="isTeacher" mat-flat-button color="primary" (click)="openCreateCourseDialog()">
+          <mat-icon>add</mat-icon>
+          צור קורס חדש
+        </button>
+      </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="courses-grid">
+      <mat-card *ngFor="let course of filteredCourses" class="course-card" [class.teacher-course]="isCourseTeacher(course)">
+        <div class="course-card-content">
+          <!-- Course Header -->
+          <div class="course-header">
+            <div class="course-category" *ngIf="course.category">
+              <mat-icon>category</mat-icon>
+              <span>{{ course.category }}</span>
+            </div>
+            <h2 class="course-title">{{ course.title || course.name }}</h2>
+            
+            <div class="course-badges">
+              <span *ngIf="isCourseTeacher(course)" class="teacher-badge" matTooltip="אתה המורה של הקורס">
+                <mat-icon>school</mat-icon>
+                מורה
+              </span>
+              <span *ngIf="isEnrolled(course) && !isCourseTeacher(course)" class="enrolled-badge" matTooltip="אתה רשום לקורס זה">
+                <mat-icon>check_circle</mat-icon>
+                רשום
+              </span>
+              <span *ngIf="course.isNew" class="new-badge" matTooltip="קורס חדש">
+                <mat-icon>fiber_new</mat-icon>
+                חדש
+              </span>
+            </div>
+          </div>
+          
+          <!-- Course Description -->
+          <p class="course-description" [title]="course.description">
+            {{ course.description || 'אין תיאור זמין' }}
+          </p>
+          
+          <!-- Course Progress -->
+          <div class="course-progress" *ngIf="isEnrolled(course) && course.progress > 0">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="course.progress"></div>
+            </div>
+            <span class="progress-text">{{ course.progress }}% הושלם</span>
+          </div>
+          
+          <!-- Course Meta -->
+          <div class="course-meta">
+            <div class="meta-item" matTooltip="מורה הקורס">
+              <mat-icon>person</mat-icon>
+              <span>{{ course.teacherName || 'ללא מורה' }}</span>
+            </div>
+            <div class="meta-item" matTooltip="מספר משתתפים">
+              <mat-icon>people</mat-icon>
+              <span>{{ course.enrolledStudents || 0 }}</span>
+            </div>
+            <div class="meta-item" *ngIf="course.duration" matTooltip="משך הקורס">
+              <mat-icon>schedule</mat-icon>
+              <span>{{ course.duration }} שעות</span>
+            </div>
+            <div class="meta-item" *ngIf="course.level" matTooltip="רמת קושי">
+              <mat-icon>signal_cellular_alt</mat-icon>
+              <span>{{ course.level }}</span>
+            </div>
+          </div>
+          
+          <!-- Course Footer -->
+          <div class="course-footer">
+            <div class="course-rating" *ngIf="course.rating">
+              <mat-icon *ngFor="let star of [1,2,3,4,5]" 
+                       [class.filled]="star <= course.rating"
+                       [class.half]="star === Math.ceil(course.rating) && course.rating % 1 > 0">
+                {{ star <= course.rating ? 'star' : (star === Math.ceil(course.rating) && course.rating % 1 > 0 ? 'star_half' : 'star_border') }}
+              </mat-icon>
+              <span class="rating-text">({{ course.rating.toFixed(1) }})</span>
+            </div>
+            
+            <div class="course-price" *ngIf="course.price && course.price > 0">
+              <span class="price">{{ course.price }}₪</span>
+              <span class="original-price" *ngIf="course.originalPrice">{{ course.originalPrice }}₪</span>
+            </div>
+            <div class="course-free" *ngIf="!course.price || course.price === 0">
+              <mat-icon>check_circle</mat-icon>
+              <span>חינם</span>
+            </div>
+          </div>
+          
+          <!-- Course Actions -->
+          <div class="course-actions">
+            <button mat-button color="primary" class="details-btn" 
+                    [routerLink]="['/courses', course.id]" 
+                    [queryParams]="{ from: showAllCourses ? 'all' : 'my' }">
+              <span>פרטים נוספים</span>
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            
+            <div class="action-buttons">
+              <div *ngIf="isCourseTeacher(course)" class="teacher-actions">
+                <button mat-icon-button color="warn" 
+                        (click)="$event.stopPropagation(); deleteCourse(course.id)" 
+                        matTooltip="מחיקת קורס">
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" 
+                        [routerLink]="['/courses', course.id, 'edit']" 
+                        matTooltip="עריכת קורס">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
+              
+              <button *ngIf="!isCourseTeacher(course) && !isEnrolled(course)" 
+                      mat-raised-button 
+                      color="primary" 
+                      class="enroll-btn"
+                      (click)="enroll(course.id)"
+                      [disabled]="isEnrolling">
+                <span *ngIf="!isEnrolling">הרשם עכשיו</span>
+                <mat-spinner *ngIf="isEnrolling" diameter="20"></mat-spinner>
+              </button>
+              
+              <button *ngIf="!isCourseTeacher(course) && isEnrolled(course)" 
+                      mat-stroked-button 
+                      color="primary" 
+                      class="learn-btn"
+                      [routerLink]="['/courses', course.id, 'learn']">
+                <mat-icon>school</mat-icon>
+                <span>המשך ללמידה</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+    
+    <!-- Pagination and Results Count -->
+    <div class="pagination-container">
+      <div class="results-count" *ngIf="filteredCourses.length > 0">
+        <span>מציג {{ (currentPage * pageSize) + 1 }}-{{ Math.min((currentPage + 1) * pageSize, totalItems) }} מתוך {{ totalItems }} קורסים</span>
+      </div>
+      
+      <mat-paginator *ngIf="totalItems > pageSize" 
+                    [length]="totalItems" 
+                    [pageSize]="pageSize" 
+                    [pageIndex]="currentPage"
+                    [pageSizeOptions]="[5, 10, 20]"
+                    (page)="onPageChange($event)"
+                    aria-label="בחירת עמוד"
+                    class="custom-paginator">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

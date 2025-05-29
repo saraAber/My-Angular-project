@@ -1,0 +1,12 @@
+<div class="main-header">
+  <img src="assets/logo2.png" alt="לוגו האתר" class="site-logo" />
+  <nav class="header-nav">
+    <a routerLink="/">דף הבית</a>
+    <a routerLink="/courses" *ngIf="authService.isLoggedIn()">קורסים</a>
+    <a routerLink="/profile" *ngIf="authService.isLoggedIn()">הפרופיל שלי</a>
+    <a routerLink="/auth" *ngIf="!authService.isLoggedIn()">התחברות / הרשמה</a>
+    <button *ngIf="authService.isLoggedIn()" (click)="logout()" class="logout-btn">התנתקות</button>
+  </nav>
+  <button *ngIf="authService.isLoggedIn()" (click)="goBack()" class="back-btn-simple">⬅ חזור</button>
+</div>
+

@@ -1,37 +1,50 @@
 <div class="course-details-container">
-  <div *ngIf="isLoading" class="loading-indicator">
-     <mat-spinner></mat-spinner>
-     <p>טוען פרטי קורס ושיעורים...</p>
+  <div *ngIf="userRole === 'teacher'" class="action-buttons-bar">
+    <button class="add-lesson-btn" (click)="addLesson()">
+      <span class="icon">➕</span>
+      הוספת שיעור
+    </button>
+    <button class="lesson-btn delete" (click)="deleteCourse()">
+      <span class="icon">🗑️</span>
+      מחיקת קורס
+    </button>
   </div>
 
-  <mat-card *ngIf="!isLoading && course" class="course-card">
-    <mat-card-title>{{ course.title }}</mat-card-title>
-    <mat-card-content>
-      <p>{{ course.description }}</p>
-      </mat-card-content>
-  </mat-card>
+  <div class="course-lessons-header">
+    <span class="lessons-icon">📚</span>
+    <h2 class="lessons-title">שיעורים בקורס</h2>
+    <div class="lessons-inspiration">כל שיעור הוא עוד צעד במסע שלך!</div>
+  </div>
 
-  <mat-card *ngIf="!isLoading && lessons.length > 0" class="lessons-card">
-    <mat-card-title>שיעורים בקורס</mat-card-title>
-    <mat-card-content>
-      <mat-list>
-        <mat-list-item *ngFor="let lesson of lessons">
-          <button mat-button class="lesson-button" (click)="viewLessonDetails(lesson.id)">
-            <mat-icon>play_circle_outline</mat-icon> {{ lesson.title }}
+  <div *ngIf="userRole === 'student' && hasLessons" class="student-buttons">
+    <button *ngIf="!isEnrolled" class="custom-btn add" (click)="enrollCourse()">📚 הרשמה לקורס</button>
+    <button *ngIf="isEnrolled" class="custom-btn cancel" (click)="leaveCourse()">🚪 יציאה מהקורס</button>
+  </div>
+
+  <ng-container *ngIf="lessons.length > 0; else noLessons">
+    <div class="lessons-grid">
+      <div class="lesson-card" *ngFor="let lesson of lessons; let i = index">
+        <span class="lesson-number">{{i + 1}}</span>
+        <div class="lesson-watermark">
+          <img src="src/assets/iconLogo.png" alt="לוגו" style="width: 2.7em; opacity: 0.12;" />
+        </div>
+        <div class="lesson-title">{{ lesson.title }}</div>
+        <div class="lesson-content">{{ lesson.content }}</div>
+        <div class="lesson-actions">
+          <button *ngIf="userRole === 'teacher'" class="lesson-btn edit" (click)="editLesson(lesson)">
+            ✏️ ערוך שיעור
           </button>
-        </mat-list-item>
-      </mat-list>
-    </mat-card-content>
-  </mat-card>
+          <button *ngIf="userRole === 'teacher'" class="lesson-btn delete" (click)="deleteLesson(lesson.id)">
+            🗑️ מחיקת שיעור
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
 
-  <mat-card *ngIf="!isLoading && lessons.length === 0 && course" class="no-lessons-card">
-      <mat-card-content>
-          <p>אין שיעורים זמינים עבור קורס זה כרגע.</p>
-      </mat-card-content>
-  </mat-card>
-
-   <div *ngIf="!isLoading && !course" class="error-message">
-       <p>לא ניתן לטעון את פרטי הקורס.</p>
-   </div>
-
+  <ng-template #noLessons>
+    <div class="no-lessons">
+      <p>🎓 הקורס עדיין בהתהוות! השיעורים יתווספו בקרוב.</p>
+    </div>
+  </ng-template>
 </div>

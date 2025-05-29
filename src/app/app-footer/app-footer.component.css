@@ -1,0 +1,62 @@
+/* משתני צבעים */
+:root {
+  --primary-blue: #3498db;
+  --success-green: #2ecc71;
+}
+
+/* איפוס ברירת מחדל */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* עיצוב גוף הדף */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* קונטיינר ראשי */
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* תוכן ראשי - יתפוס את כל השטח הפנוי */
+.main-content {
+  flex: 1 0 auto;
+  width: 100%;
+  padding-bottom: 20px; /* מרווח תחתון כדי שהפוטר לא ידביק את התוכן */
+}
+
+/* עיצוב הפוטר */
+.site-footer {
+  flex-shrink: 0;
+  background: linear-gradient(90deg, var(--primary-blue) 0%, var(--success-green) 100%);
+  color: #fff;
+  text-align: center;
+  padding: 20px 0;
+  font-size: 1em;
+  letter-spacing: 1px;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin-top: auto; /* דואג שהפוטר יידבק לתחתית */
+}
+
+/* התאמות למסכים קטנים */
+@media (max-width: 600px) {
+  footer.site-footer {
+    font-size: 0.95em;
+    padding: 16px 0 12px 0;
+  }
+}
+
+/* הגדרות לתמונות */
+img {
+  max-width: 100%;
+  height: auto;
+}

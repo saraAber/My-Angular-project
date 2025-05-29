@@ -1,207 +1,383 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+// Angular core
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CourseService } from '../../services/course.service';
-import { Subscription, forkJoin } from 'rxjs'; // Import forkJoin
-import { catchError, tap } from 'rxjs/operators'; // Import operators
-import { throwError } from 'rxjs'; // Import throwError
 
-// Import Angular Material Modules
-import { MatCardModule } from '@angular/material/card';
+// Angular Material
+import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatListModule } from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar } from '@angular/material/snack-bar'; // For displaying messages
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; // For loading spinner
 
-// Assuming you have Course and Lesson interfaces defined and exported
-// REMOVE the local interface definition if you have one in this file
-import { Course } from '../../models/course.model'; // Adjust the path if needed based on your project structure
-import { Lesson } from '../../models/lesson.model'; // Assuming you have a Lesson model/interface
+// Routing
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
+
+// Services
+import { CourseService, Course } from '../course.service';
+import { LessonService } from '../lesson.service';
+import { AuthService } from '../../auth/auth.service';
+
+// Models
+import { Lesson } from '../lesson.model';
+
+// Components
+import { SuccessDialogComponent } from '../success-dialog/success-dialog.component';
+import { AddLessonDialogComponent } from '../add-lesson-dialog/add-lesson-dialog.component';
+import { DeleteCourseDialogComponent } from '../delete-course/delete-course.component';
+import { DeleteLessonDialogComponent } from '../delete-lesson/delete-lesson.component';
+import { EditLessonComponent } from '../edit-lesson/edit-lesson.component';
+
+type UserRole = 'student' | 'teacher' | '';
 
 @Component({
   selector: 'app-course-details',
   standalone: true,
   imports: [
+    // Angular modules
     CommonModule,
     RouterModule,
-    // Angular Material Modules
-    MatCardModule,
+    
+    // Material modules
     MatButtonModule,
-    MatListModule,
+    MatCardModule,
     MatIconModule,
-    MatProgressSpinnerModule
-    // MatSnackBarModule should be imported in app.module.ts or app.config.ts
+    
+    // Dialogs (used in component methods)
+    SuccessDialogComponent,
+    AddLessonDialogComponent,
+    DeleteCourseDialogComponent,
+    DeleteLessonDialogComponent,
+    EditLessonComponent
   ],
   templateUrl: './course-details.component.html',
   styleUrls: ['./course-details.component.css']
 })
-export class CourseDetailsComponent implements OnInit, OnDestroy {
-  course: Course | null = null; // Changed from undefined to null for consistency
-  lessons: Lesson[] = []; // Initialize as empty array
-  isLoading = true; // Loading indicator for the whole component
-  private courseId: number | null = null;
-  private subscriptions: Subscription = new Subscription(); // Use a single subscription object
+export class CourseDetailsComponent implements OnInit {
+  isEnrolled = false;
+  courseId!: number;
+  course: Course | null = null;
+  lessons: Lesson[] = [];
+  hasLessons = false;
+  userRole: UserRole = '';
+  isCourseOwner = false;
+
+  isLoading = true;
 
   constructor(
-    private route: ActivatedRoute, // Inject ActivatedRoute
-    private courseService: CourseService, // Inject CourseService
-    private router: Router, // Inject Router
-    private snackBar: MatSnackBar // Inject MatSnackBar
-  ) { }
+    private route: ActivatedRoute,
+    private courseService: CourseService,
+    private lessonService: LessonService,
+    private authService: AuthService,
+    private dialog: MatDialog,
+    private router: Router
+  ) {}
 
-  ngOnInit(): void {
-    this.isLoading = true;
-    // Get the courseId from the route parameters
-    const routeSub = this.route.params.subscribe(params => {
-      const id = params['id']; // Access parameter by name
-      if (id) {
-        this.courseId = Number(id); // Convert to number
-        if (!isNaN(this.courseId)) {
-           this.loadCourseDetailsAndLessons(this.courseId);
-        } else {
-           console.error('Invalid course ID in route parameters:', id);
-           this.isLoading = false;
-           this.snackBar.open('שגיאה: מזהה קורס לא תקין.', 'סגור', { duration: 5000 });
-           this.router.navigate(['/courses']); // Redirect if ID is invalid
-        }
-      } else {
-        console.error('Course ID not provided in route parameters.');
-        this.isLoading = false;
-        this.snackBar.open('שגיאה: מזהה קורס לא נמצא.', 'סגור', { duration: 5000 });
-        this.router.navigate(['/courses']); // Redirect if ID is missing
+
+  ngOnInit() {
+    this.courseId = Number(this.route.snapshot.paramMap.get('id'));
+    
+    // Set user role safely
+    const role = this.authService.getUserRole();
+    if (role === 'student' || role === 'teacher') {
+      this.userRole = role;
+    } else {
+      this.userRole = '';
+    }
+    console.log("User role:", this.userRole);
+
+    this.loadCourseDetails();
+  }
+
+  loadCourseDetails() {
+    this.courseService.getCourseById(this.courseId).subscribe({
+      next: (data: Course) => {
+        this.course = data;
+        this.isEnrolled = !!data.enrolled;
+        
+        const myId = this.authService.getUserId();
+        this.isCourseOwner = this.userRole === 'teacher' && 
+                           data.teacherId !== undefined && 
+                           myId !== null &&
+                           data.teacherId === myId;
+        this.loadLessons();
+        console.log("Course ID:", this.courseId);
+      },
+      error: (err) => console.error("Error loading course:", err),
+      complete: () => this.isLoading = false
+    });
+  }
+
+  loadLessons() {
+    this.lessonService.getLessonsByCourseId(this.courseId).subscribe({
+      next: (data) => {
+        this.lessons = data;
+        this.hasLessons = Array.isArray(data) && data.length > 0;
+        console.log("[loadLessons] lessons:", this.lessons);
+      },
+      error: (err) => {
+        this.hasLessons = false;
+        console.error("Error loading lessons:", err)
       }
     });
-    this.subscriptions.add(routeSub); // Add route subscription to the main subscription object
   }
 
-  ngOnDestroy(): void {
-    // Unsubscribe from all subscriptions at once
-    this.subscriptions.unsubscribe();
-  }
-
-  /**
-   * Loads course details and lessons concurrently.
-   * @param id The ID of the course.
-   */
-  loadCourseDetailsAndLessons(id: number): void {
-      this.isLoading = true; // Start loading
-
-      // Use forkJoin to load both course details and lessons in parallel
-      const combined = forkJoin({
-          course: this.courseService.getCourseById(id).pipe(
-              catchError(error => {
-                  console.error('Error loading course details:', error);
-                  // Handle specific error types if needed (e.g., 404)
-                  if (error.status === 404) {
-                      this.snackBar.open('הקורס לא נמצא.', 'סגור', { duration: 5000 });
-                      this.router.navigate(['/courses']); // Redirect if course not found
-                  } else {
-                      this.snackBar.open('שגיאה בטעינת פרטי הקורס.', 'סגור', { duration: 5000 });
-                  }
-                  return throwError(() => new Error('Failed to load course details')); // Re-throw error
-              })
-          ),
-          lessons: this.courseService.getLessonsByCourseId(id).pipe(
-               catchError(error => {
-                  console.error('Error loading course lessons:', error);
-                   this.snackBar.open('שגיאה בטעינת השיעורים.', 'סגור', { duration: 5000 });
-                  return throwError(() => new Error('Failed to load course lessons')); // Re-throw error
-              })
-          )
+  enrollCourse() {
+    if (!this.hasLessons) {
+      this.dialog.open(SuccessDialogComponent, {
+        width: '300px',
+        data: {
+          title: 'אין אפשרות להירשם',
+          message: 'לא ניתן להירשם לקורס זה כי אין בו שיעורים.'
+        }
       });
-
-      const combinedSub = combined.subscribe({
-          next: (results) => {
-              this.course = results.course;
-              this.lessons = results.lessons;
-              this.isLoading = false; // Stop loading on success
-          },
-          error: (error) => {
-              // Errors are handled in the individual catchError pipes,
-              // but this block will be called if any of the observables in forkJoin fail
-              console.error('Combined loading failed:', error);
-              this.isLoading = false; // Stop loading on error
-              // Specific error messages are shown by the catchError operators above
-          }
-      });
-
-      this.subscriptions.add(combinedSub); // Add combined subscription
-  }
-
-
-  /**
-   * Navigates to the lesson details page.
-   * @param lessonId The ID of the lesson to view.
-   */
-  viewLessonDetails(lessonId: number): void {
-    // Navigate to the lesson details page, passing courseId and lessonId
-    if (this.courseId !== null) {
-       // Assuming the route for lesson details is structured like '/courses/:courseId/lessons/:lessonId'
-       this.router.navigate(['/courses', this.courseId, 'lessons', lessonId]);
-    } else {
-        console.error("Cannot navigate to lesson details: Course ID is missing.");
-        this.snackBar.open('שגיאה בניווט לשיעור.', 'סגור', { duration: 3000 });
+      return;
     }
+    if (this.isEnrolled) {
+      console.warn('[הרשמה] ניסיון הרשמה כפול – המשתמש כבר רשום לקורס', this.courseId);
+      this.dialog.open(SuccessDialogComponent, {
+        width: '300px',
+        data: {
+          title: 'הודעה',
+          message: 'את/ה כבר רשום/ה לקורס.'
+        }
+      });
+      return;
+    }
+    console.log('[הרשמה] מנסה להירשם לקורס', this.courseId);
+    const userId = this.authService.getUserId();
+    this.courseService.enrollInCourse(this.courseId, userId).subscribe({
+      next: () => {
+        this.isEnrolled = true;
+        console.log('[הרשמה] הצלחה – נרשמת לקורס', this.courseId);
+        this.dialog.open(SuccessDialogComponent, {
+          width: '300px',
+          data: {
+            title: 'הצלחה',
+            message: 'נרשמת בהצלחה לקורס!'
+          }
+        });
+      },
+      error: (err) => {
+        const errMsg = err?.error?.message || err?.error || '';
+        if ((err?.error?.code === 'SQLITE_CONSTRAINT') ||
+            (typeof errMsg === 'string' && (errMsg.includes('SQLITE_CONSTRAINT') || errMsg.includes('כבר רשום')))) {
+          this.isEnrolled = true; // ודא שכפתור יציאה יוצג מיד
+          this.dialog.open(SuccessDialogComponent, {
+            width: '300px',
+            data: {
+              title: 'הודעה',
+              message: 'את/ה כבר רשום/ה לקורס.'
+            }
+          });
+          return;
+        }
+        if (err.status === 500) {
+          this.isEnrolled = true; // ודא שכפתור יציאה יוצג מיד
+          this.dialog.open(SuccessDialogComponent, {
+            width: '300px',
+            data: {
+              title: 'שגיאה',
+              message: 'לא ניתן להירשם לקורס. ייתכן שכבר נרשמת או שיש בעיה זמנית. נסה שוב מאוחר יותר.'
+            }
+          });
+          return;
+        }
+        this.dialog.open(SuccessDialogComponent, {
+          width: '300px',
+          data: {
+            title: 'שגיאה',
+            message: 'אירעה שגיאה בהרשמה לקורס.'
+          }
+        });
+      }
+    });
   }
 
-  // You can keep your existing loadCourseDetails method if you prefer
-  // but loadCourseDetailsAndLessons is more efficient as it loads concurrently.
-  // If keeping, ensure it also handles loading state and errors with MatSnackBar.
-  // loadCourseDetails(id: number): void { ... }
+  leaveCourse() {
+    if (!this.isEnrolled) {
+      console.warn('[יציאה] ניסיון יציאה – המשתמש לא רשום לקורס', this.courseId);
+      this.dialog.open(SuccessDialogComponent, {
+        width: '300px',
+        data: {
+          title: 'הודעה',
+          message: 'את/ה לא רשום/ה לקורס.'
+        }
+      });
+      return;
+    }
+    console.log('[יציאה] מנסה לצאת מהקורס', this.courseId);
+    this.courseService.unenrollStudent(this.courseId).subscribe({
+      next: () => {
+        this.isEnrolled = false;
+        console.log('[יציאה] הצלחה – יצאת מהקורס', this.courseId);
+        this.dialog.open(SuccessDialogComponent, {
+          width: '300px',
+          data: {
+            title: 'הצלחה',
+            message: 'יצאת מהקורס בהצלחה.'
+          }
+        });
+      },
+      error: (err) => {
+        console.error('[יציאה] שגיאה ביציאה מהקורס', this.courseId, err);
+        this.dialog.open(SuccessDialogComponent, {
+          width: '300px',
+          data: {
+            title: 'שגיאה',
+            message: 'אירעה שגיאה ביציאה מהקורס.'
+          }
+        });
+      }
+    });
+  }
+  
+  addLesson() {
+    if (!this.isCourseOwner) {
+      this.dialog.open(SuccessDialogComponent, {
+        width: '340px',
+        data: {
+          title: 'אין הרשאה',
+          message: 'רק יוצר הקורס יכול להוסיף שיעורים.'
+        }
+      });
+      return;
+    }
+    const dialogRef = this.dialog.open(AddLessonDialogComponent, {
+      width: '400px',
+      data: { courseId: this.courseId }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.lessonService.createLesson(this.courseId, result.title, result.content).subscribe({
+          next: () => {
+            this.loadLessons();
+            this.dialog.open(SuccessDialogComponent, {
+              width: '320px',
+              data: {
+                title: 'הצלחה',
+                message: 'השיעור נוצר בהצלחה! 😃'
+              }
+            });
+            console.log("Lessons after adding new lesson:", this.lessons);
+          },
+          error: (err) => console.error("Error adding lesson:", err)
+        });
+      }
+    });
+  }
+  
+  deleteLesson(lessonId: number) {
+    if (!this.isCourseOwner) {
+      this.dialog.open(SuccessDialogComponent, {
+        width: '340px',
+        data: {
+          title: 'אין הרשאה',
+          message: 'רק יוצר הקורס יכול למחוק שיעורים.'
+        }
+      });
+      return;
+    }
+    const lesson = this.lessons.find(l => l.id === lessonId);
+    const lessonTitle = lesson ? lesson.title : lessonId;
+    const dialogRef = this.dialog.open(DeleteLessonDialogComponent, {
+      width: '350px',
+      data: { id: lessonId, title: lessonTitle }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.lessonService.deleteLesson(this.courseId, lessonId).subscribe({
+          next: () => {
+            this.dialog.open(SuccessDialogComponent, {
+              width: '300px',
+              data: {
+                title: 'הצלחה',
+                message: 'מחיקת השיעור בוצעה בהצלחה!'
+              }
+            });
+            this.loadLessons();
+          },
+          error: (err) => {
+            this.dialog.open(SuccessDialogComponent, {
+              width: '300px',
+              data: {
+                title: 'שגיאה',
+                message: 'אירעה שגיאה במחיקת השיעור'
+              }
+            });
+            console.error("Error deleting lesson:", err);
+          }
+        });
+      }
+    });
+  }
+
+  editLesson(lesson: any) {
+    if (!this.isCourseOwner) {
+      this.dialog.open(SuccessDialogComponent, {
+        width: '340px',
+        data: {
+          title: 'אין הרשאה',
+          message: 'רק יוצר הקורס יכול לערוך שיעורים.'
+        }
+      });
+      return;
+    }
+    const dialogRef = this.dialog.open(EditLessonComponent, {
+      width: '400px',
+      data: {
+        courseId: this.courseId,
+        lessonId: lesson.id,
+        title: lesson.title,
+        content: lesson.content
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadLessons();
+      }
+    });
+  }
+
+  deleteCourse() {
+    if (!this.isCourseOwner) {
+      this.dialog.open(SuccessDialogComponent, {
+        width: '340px',
+        data: {
+          title: 'אין הרשאה',
+          message: 'רק יוצר הקורס יכול למחוק את הקורס.'
+        }
+      });
+      return;
+    }
+    const dialogRef = this.dialog.open(DeleteCourseDialogComponent, {
+      width: '350px',
+      data: { id: this.courseId, title: this.course?.title || this.courseId }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.courseService.deleteCourse(this.courseId).subscribe({
+          next: () => {
+            this.dialog.open(SuccessDialogComponent, {
+              width: '300px',
+              data: {
+                title: 'הצלחה',
+                message: 'הקורס נמחק בהצלחה!'
+              }
+            });
+            this.router.navigate(['/courses']);
+          },
+          error: (err) => {
+            this.dialog.open(SuccessDialogComponent, {
+              width: '300px',
+              data: {
+                title: 'שגיאה',
+                message: 'אירעה שגיאה במחיקת הקורס'
+              }
+            });
+            console.error('Error deleting course:', err);
+          }
+        });
+      }
+    });
+  }
+
 }
-
-
-// import { Component, OnInit, OnDestroy } from '@angular/core';
-// import { ActivatedRoute, RouterModule } from '@angular/router';
-// import { CommonModule } from '@angular/common';
-// import { CourseService } from '../course.service';
-// import { Course } from '../course.model'; // ודא שיש לך מודל Course
-// import { Subscription } from 'rxjs';
-
-// @Component({
-//   selector: 'app-course-details',
-//   standalone: true,
-//   imports: [CommonModule,RouterModule],
-//   templateUrl: './course-details.component.html',
-//   styleUrls: ['./course-details.component.css']
-// })
-// export class CourseDetailsComponent implements OnInit, OnDestroy {
-//   course: Course | undefined;
-//   private routeSubscription: Subscription | undefined;
-
-//   constructor(
-//     private route: ActivatedRoute,
-//     private courseService: CourseService
-//   ) { }
-
-//   ngOnInit(): void {
-//     this.routeSubscription = this.route.params.subscribe(params => {
-//       const courseId = Number(params['id']);
-//       if (!isNaN(courseId)) {
-//         this.loadCourseDetails(courseId);
-//       } else {
-//         console.error('Invalid course ID in route:', params['id']);
-//         // אפשר להציג כאן הודעה למשתמש על ID לא תקין
-//       }
-//     });
-//   }
-
-//   ngOnDestroy(): void {
-//     if (this.routeSubscription) {
-//       this.routeSubscription.unsubscribe();
-//     }
-//   }
-
-//   loadCourseDetails(id: number): void {
-//     this.courseService.getCourseById(id).subscribe({
-//       next: course => {
-//         this.course = course;
-//       },
-//       error: error => {
-//         console.error('Error loading course details:', error);
-//         // כאן אפשר להוסיף טיפול שגיאה מתאים (הצגת הודעה למשתמש)
-//       }
-//     });
-//   }
-// }
